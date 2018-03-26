@@ -134,7 +134,7 @@ GstSigGen::start ()
   GstStructure *st;
   GstStateChangeReturn ret;
 
-  printf ("starting");
+  // printf ("starting");
 
   st = gst_structure_new_empty ("audio/x-raw");
   gst_structure_set (st, "format", G_TYPE_STRING, "BGRA", nullptr);
@@ -150,7 +150,7 @@ GstSigGen::start ()
 
   ret = gst_element_set_state (_pipeline, GST_STATE_PLAYING);
 
-  printf ("started");
+  // printf ("started");
 }
 
 void
@@ -220,13 +220,174 @@ GstSigGen::cb_Bus (GstBus *bus, GstMessage *msg, GstSigGen *player)
   return TRUE;
 }
 
+void
+bin (unsigned short v, int number[], int size)
+{
+  for (; size - 1 >= 0; size--)
+    number[size - 1] = (v >> (size - 1)) & 1;
+}
+
 int
 main ()
 {
-  GstSigGen player;
-  player.setFreq ("1000");
-  player.setVolume ("1");
-  player.start ();
+  GstSigGen player1, player2, player3, player4, player5, player6, player7,
+      player8, player9, player10, player11, player12, player13;
+
+  int const size = 16;
+
+  int number[size];
+
+  player13.setFreq ("19500");
+  player13.setVolume ("1");
+  player13.start ();
+
+  player1.setFreq ("20000");
+  player1.setVolume ("0");
+  player1.start ();
+
+  player2.setFreq ("20150");
+  player2.setVolume ("0");
+  player2.start ();
+
+  player3.setFreq ("20300");
+  player3.setVolume ("0");
+  player3.start ();
+
+  player4.setFreq ("20450");
+  player4.setVolume ("0");
+  player4.start ();
+
+  player5.setFreq ("20600");
+  player5.setVolume ("0");
+  player5.start ();
+
+  player6.setFreq ("20750");
+  player6.setVolume ("0");
+  player6.start ();
+
+  player7.setFreq ("20900");
+  player7.setVolume ("0");
+  player7.start ();
+
+  player8.setFreq ("21050");
+  player8.setVolume ("0");
+  player8.start ();
+
+  player9.setFreq ("21200");
+  player9.setVolume ("0");
+  player9.start ();
+
+  player10.setFreq ("21350");
+  player10.setVolume ("0");
+  player10.start ();
+
+  player11.setFreq ("21500");
+  player11.setVolume ("0");
+  player11.start ();
+
+  player12.setFreq ("21650");
+  player12.setVolume ("0");
+  player12.start ();
+
+  auto start = std::chrono::system_clock::now ();
+
+  short dataToSend[]
+      = { 1, 7, 5, 4, 19, 1 }; // highest number should be 2^13-1 = 4095
+
+  for (int t = 0; t < size; t++)
+    {
+      number[t] = 0;
+    }
+
+  for (int i = 0; i < sizeof (dataToSend) / sizeof (dataToSend[0]); i++)
+    {
+      printf ("number: %d\n", dataToSend[i]);
+      bin (dataToSend[i], number, size);
+
+      for (int t = 0; t < size; t++)
+        {
+          printf ("%d", number[t]);
+        }
+
+      printf ("\n");
+
+      if (number[0])
+        player1.setVolume ("0.5");
+      else
+        player1.setVolume ("0");
+      if (number[1])
+        player2.setVolume ("0.5");
+      else
+        player2.setVolume ("0");
+      if (number[2])
+        player3.setVolume ("0.5");
+      else
+        player3.setVolume ("0");
+      if (number[3])
+        player4.setVolume ("0.5");
+      else
+        player4.setVolume ("0");
+      if (number[4])
+        player5.setVolume ("0.5");
+      else
+        player5.setVolume ("0");
+      if (number[5])
+        player6.setVolume ("0.5");
+      else
+        player6.setVolume ("0");
+      if (number[6])
+        player7.setVolume ("0.5");
+      else
+        player7.setVolume ("0");
+      if (number[7])
+        player8.setVolume ("0.5");
+      else
+        player8.setVolume ("0");
+      if (number[8])
+        player9.setVolume ("0.5");
+      else
+        player9.setVolume ("0");
+      if (number[9])
+        player10.setVolume ("0.5");
+      else
+        player10.setVolume ("0");
+      if (number[10])
+        player11.setVolume ("0.5");
+      else
+        player11.setVolume ("0");
+      if (number[11])
+        player12.setVolume ("0.5");
+      else
+        player12.setVolume ("0");
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+      for (int t = 0; t < size; t++)
+        {
+          number[t] = 0;
+        }
+
+      player1.setVolume ("0");
+      player2.setVolume ("0");
+      player3.setVolume ("0");
+      player4.setVolume ("0");
+      player5.setVolume ("0");
+      player6.setVolume ("0");
+      player7.setVolume ("0");
+      player8.setVolume ("0");
+      player9.setVolume ("0");
+      player10.setVolume ("0");
+      player11.setVolume ("0");
+      player12.setVolume ("0");
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+
+  auto end = std::chrono::system_clock::now ();
+  std::chrono::duration<double, std::milli> elapsed_seconds = end - start;
+
+  std::cout << "elapsed time: " << elapsed_seconds.count () << "ms\n";
+
   while (true)
     ;
 }
