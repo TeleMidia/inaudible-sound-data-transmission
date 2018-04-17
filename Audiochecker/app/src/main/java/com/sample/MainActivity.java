@@ -1,7 +1,9 @@
 package com.sample;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,6 +34,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        CheckForRecordAudioPermission();
+
         long timezero, timefull;
 
         timezero = currentTimeMillis();
@@ -45,6 +49,45 @@ public class MainActivity extends Activity {
         textAmplitude = (TextView) findViewById(R.id.textAmplitude);
         textDecibel = (TextView) findViewById(R.id.textDecibel);
         textFrequency = (TextView) findViewById(R.id.textFrequency);
+    }
+
+    private void CheckForRecordAudioPermission() {
+        if (android.os.Build.VERSION.SDK_INT >= 23)
+        {
+            // ANDROID 6.0 AND UP!
+            boolean accessRecordAudio = false;
+            try
+            {
+                // Invoke checkSelfPermission method from Android 6 (API 23 and UP)
+                java.lang.reflect.Method methodCheckPermission = Activity.class.getMethod("checkSelfPermission", java.lang.String.class);
+                Object resultObj = methodCheckPermission.invoke(this, Manifest.permission.RECORD_AUDIO);
+                int result = Integer.parseInt(resultObj.toString());
+                if (result == PackageManager.PERMISSION_GRANTED)
+                {
+                    accessRecordAudio = true;
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            if (accessRecordAudio)
+            {
+                return;
+            }
+            try
+            {
+                // We have to invoke the method "void requestPermissions (Activity activity, String[] permissions, int requestCode) "
+                // from android 6
+                java.lang.reflect.Method methodRequestPermission = Activity.class.getMethod("requestPermissions", java.lang.String[].class, int.class);
+                methodRequestPermission.invoke(this, new String[]
+                        {
+                                Manifest.permission.RECORD_AUDIO
+                        }, 0x12345);
+            }
+            catch (Exception ex)
+            {
+            }
+        }
     }
 
     private Callback callback = new Callback() {

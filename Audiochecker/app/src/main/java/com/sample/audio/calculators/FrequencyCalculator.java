@@ -20,6 +20,11 @@ public class FrequencyCalculator {
     static protected int fq_count[] = new int[12];
     static protected boolean empty = true;
     static protected String fq_string = new String();
+    // Variables for tests
+    protected short dataToRecieve[] =  { 1, 7, 5, 4, 19, 1 };
+    static protected int size = 16;
+    static protected int dataReceived[] = new int[size];
+    static protected int receptionCount = 0;
 
     private int fftLen;
     private int spectrumAmpPt;
@@ -97,6 +102,12 @@ public class FrequencyCalculator {
             dataOut[j] = (data[i] * data[i] + data[i + 1] * data[i + 1]) * scaler;
         }
         dataOut[j] = data[data.length - 1] * data[data.length - 1] * scaler / 4.0;
+    }
+
+    void bin (short v, int number[], int size) {
+        Arrays.fill(number,0);
+        for (; size - 1 >= 0; size--)
+            number[size - 1] = (v >> (size - 1)) & 1;
     }
 
     public double getFreq() {
@@ -182,17 +193,19 @@ public class FrequencyCalculator {
                 empty = false;
             }
 
-//            System.out.println("is: "+Boolean.toString(t)+" Freq found: "+q+" "+ spectrumAmpOutDB[115+q]+ " "+ spectrumAmpOutDB[113]);
+            System.out.println("is: "+Boolean.toString(t)+" Freq found: "+q+" "+ spectrumAmpOutDB[115+q]+ " "+ spectrumAmpOutDB[113]);
             q++;
             t = false;
         }
 
-
-
         if (!flag & !empty){
             timezero = currentTimeMillis();
             q=0;
+            bin(dataToRecieve[receptionCount],dataReceived,size);
             for (int j: fq_count) {
+                if (dataReceived[q] <= j){
+                    break;
+                }
                 fq_string = fq_string.concat(Integer.toString(q+1)+" "+Integer.toString(j)+" - ");
 //                System.out.printf("\nNumber of times found freq %d - %d\n",q+1,j);
                 q++;
@@ -205,6 +218,10 @@ public class FrequencyCalculator {
             timefull = currentTimeMillis();
 //            System.out.printf("full array conv and print: %d\n",timefull-timezero);
             System.out.flush();
+            if (q == 11){
+                System.out.println("Changed the number!!!!!!");
+                receptionCount++;
+            }
         }
 
 //        System.out.println( "Fq0 Avg & Fq1 Avg & Fq2 Avg: "+ correct_0/num + " "+correct_1/num + " "+correct_2/num);
