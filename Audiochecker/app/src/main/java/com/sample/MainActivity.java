@@ -108,7 +108,7 @@ public class MainActivity extends Activity {
 //            Log.d("Timecheck: ", "Time Base:"+ Long.toString(time4-time1) + " Calculator:"+ Long.toString(time1a-time1) +" Amplitude:"+ Long.toString(time2-time1a) + " Decibel:"+ Long.toString(time3-time2) + " Frequency:"+ Long.toString(time4-time3));
             num++;
             average+=time4-time1;
-            Log.d("Timecheck: ", "Time Average:"+ Double.toString(average/num));
+//            Log.d("Timecheck: ", "Time Average:"+ Double.toString(average/num));
 
 //            final String amp = String.valueOf(amplitude + " Amp");
 //            final String db = String.valueOf(decibel + " db");
