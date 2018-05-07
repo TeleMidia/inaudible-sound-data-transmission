@@ -1,8 +1,10 @@
 package com.sample.audio.calculators;
 
-import static java.lang.System.currentTimeMillis;
+import junit.framework.Assert;
 
 import java.util.Arrays;
+
+import static java.lang.System.currentTimeMillis;
 
 public class FrequencyCalculator {
 
@@ -16,16 +18,16 @@ public class FrequencyCalculator {
     private double[] wnd;
     private double[][] spectrumAmpOutArray;
 
-    static protected double num = 0, correct_0 = 0, correct_1 = 0, correct_2 = 0;
-    static protected int fq_count[] = new int[12];      // Number of times where the freq was found
-    static protected boolean empty = true;              // If the fq_count array is empty
-    static protected boolean flag_new_byte = false;     // If a new byte started to be captured the time is stored
-    static protected boolean flag_runs_printed = false;
+    static protected double num = 0;                    // Counter for the number of times when a freq was found
+    static protected int fq_count[] = new int[12];      // Array of number of times where the freq was found
+    static protected boolean empty = true;              // If the receptivity array is empty
+    static protected boolean flag_new_byte = false;     // If the fq_count array is empty
+    static protected boolean flag_runs_printed = false; // If the results for all of the bytes received has been printed
     static protected String fq_string = new String();   // String to write all fq_count values
     // Variables for tests
 
-    static protected short dataToRecieve[] =  { 7, 7, 7, 7, 7, 7 };
-//    static protected short dataToRecieve[] =  { 1, 7, 5, 4, 19, 1 };
+//    static protected short dataToRecieve[] =  { 7, 7, 7, 7, 7, 7 };
+    static protected short dataToRecieve[] =  { 1, 7, 5, 4, 19, 1 };
     static private int size = 16;                                          // Size of the possible number to be received
     static private int dataExpected[] = new int[size];                     // A value of dataToReceive but in bits
     static private int receptionCount = 0;                                 // Number of dataToReceive values already analyzed
@@ -126,8 +128,7 @@ public class FrequencyCalculator {
 
     public double getFreq() {
         boolean [] fq = new boolean[12];
-        boolean flag = false;
-        long timezero, timefull;
+        boolean flag = false;               // A bit was found
 
         for (boolean t : fq){
             t = false;
@@ -182,7 +183,6 @@ public class FrequencyCalculator {
             double b = (x3 - x1) / 2;
             if (a < 0) {
                 double xPeak = -b / (2 * a);
-//                System.out.printf("x1:%f x2:%f x3:%f a:%f b:%f xPeak:%f\n",x1,x2,x3,a,b,xPeak);
                 if (Math.abs(xPeak) < 1) {
                     maxAmpFreq += xPeak * sampleRate / fftLen;
                 }
@@ -194,7 +194,6 @@ public class FrequencyCalculator {
             if (t) {
                 fq_count[q-1]++;
                 flag = true;
-                empty = false;
 
                 if (!flag_new_byte){
                     flag_new_byte = true;
@@ -210,47 +209,51 @@ public class FrequencyCalculator {
 
         num++;
 
-        if (!flag && !empty && (currentTimeMillis()-lastEmpty)>1000){
+        if (!flag && flag_new_byte && (currentTimeMillis()-lastEmpty)>1000){      // If a bit wasn't found on this run, the array is not empty and 1 sec has been passed since the byte started to be analyzed
             System.out.println("Empty T: "+ Long.toString(currentTimeMillis()-lastEmpty));
             System.out.flush();
-            timezero = currentTimeMillis();
-            if (receptionCount == 0) {
+            if (receptionCount == 0) {                                            // If a new set of bytes is being analyzed
+                Assert.assertEquals(true,empty);
                 Arrays.fill(receptivity,1);
             }
             q=0;
             bin(dataToRecieve[receptionCount],dataExpected,size);
             for (int j: fq_count) {
+
 //                System.out.printf("How are the numbers? %.2f < %.2f - place %d\n",(double) j/num, (double) 2/3,q+1);
-                if (dataExpected[q] == 1 && dataExpected[q] > j && (j/num < 2/3) ){
-//                    System.out.printf("Look: expected %d < received %d - local %d\n",dataExpected[q], j, q+1);
+
+                assert dataExpected[q] == 1 || dataExpected[q] == 0;
+
+                if (dataExpected[q] == 1 && dataExpected[q] > j && ((double) j/num < (double) 2/3) ){
+                    System.out.printf("Look: expected %d < received %d - percentage: %.2f - local %d - reception %d\n",dataExpected[q], j, (double) j/num, q+1, receptionCount+1);
                     receptivity[receptionCount] = 0;
                 }
-                else if (dataExpected[q] == 0 && dataExpected[q] < j && (j/num < 2/3)){
-//                    System.out.printf("Look: expected %d < received %d - local %d\n",dataExpected[q], j, q+1);
+                else if (dataExpected[q] == 0 && dataExpected[q] < j && ((double) j/num >= (double) 2/3)){
+                    System.out.printf("Look: expected %d >= received %d - percentage: %.2f - local %d - reception %d\n",dataExpected[q], j, (double) j/num, q+1, receptionCount+1);
                     receptivity[receptionCount] = 0;
                 }
+
                 fq_string = fq_string.concat(Integer.toString(q+1)+" "+Integer.toString(j)+" - ");
 //                System.out.printf("\nNumber of times found freq %d - %d\n",q+1,j);
                 q++;
             }
             Arrays.fill(fq_count,0);
-            empty = true;
             flag_new_byte = false;
 //            lastEmpty = currentTimeMillis();
             System.out.printf("Number of times found freqs: %s - num: %.0f\n",fq_string,num);
             System.out.flush();
             fq_string = "";
             num = 0;
-            timefull = currentTimeMillis();
-//            System.out.printf("full array conv and print: %d\n",timefull-timezero);
 //            System.out.println("Changed the number!!!!!!");
+//            System.out.println("Reception count: "+Integer.toString(receptionCount)+"\n");
             System.out.flush();
             receptionCount++;
             if (receptionCount >= dataToRecieve.length) {
                 receptionCount = 0;
-//                System.out.println("Correctness: "+Arrays.toString(receptivity)+"\n");
+                System.out.println("Correctness: "+Arrays.toString(receptivity)+"\n");
 //                System.out.println("All bytes read!\n");
                 addToAllArrayIndexes(corrects,receptivity);
+                empty = true;
 //                System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f]\n", corrects[0]/allruns,corrects[1]/allruns,corrects[2]/allruns,corrects[3]/allruns,corrects[4]/allruns,corrects[5]/allruns);
                 System.out.flush();
                 allruns++;
@@ -258,17 +261,19 @@ public class FrequencyCalculator {
         }
 
         if (!empty && (currentTimeMillis()-lastEmpty)>2000) {
+            System.out.println("Current array :"+Arrays.toString(fq_count)+" time: "+ Long.toString(currentTimeMillis()-lastEmpty));
             Arrays.fill(fq_count,0);
             empty = true;
-            lastEmpty = currentTimeMillis();
+            flag_new_byte = false;
             fq_string = "";
             receptionCount = 0;
-//            System.out.printf("Silence greater than 2s\n");
+            allruns++;
+            System.out.printf("Silence greater than 2s\n");
             System.out.flush();
         }
 
         if ((currentTimeMillis()-lastEmpty)>5000 && !flag_runs_printed){
-            System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f]\n", corrects[0],corrects[1],corrects[2],corrects[3],corrects[4],corrects[5]);
+            System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f] - number of runs : %d\n", corrects[0]/allruns,corrects[1]/allruns,corrects[2]/allruns,corrects[3]/allruns,corrects[4]/allruns,corrects[5]/allruns,allruns-1);
             flag_runs_printed = true;
         }
 
