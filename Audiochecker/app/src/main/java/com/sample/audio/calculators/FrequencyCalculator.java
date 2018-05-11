@@ -18,20 +18,21 @@ public class FrequencyCalculator {
     private double[] wnd;
     private double[][] spectrumAmpOutArray;
 
-    static protected double num = 0;                    // Counter for the number of times when a freq was found
-    static protected int fq_count[] = new int[12];      // Array of number of times where the freq was found
-    static protected boolean empty = true;              // If the receptivity array is empty
-    static protected boolean flag_new_byte = false;     // If the fq_count array is empty
-    static protected boolean flag_runs_printed = false; // If the results for all of the bytes received has been printed
-    static protected String fq_string = new String();   // String to write all fq_count values
+    static private double num = 0;                    // Counter for the number of times when a freq was found
+    static private int fq_count[] = new int[12];      // Array of number of times where the freq was found
+    static private boolean empty = true;              // If the receptivity array is empty
+    static private boolean flag_new_byte = false;     // If the fq_count array is empty
+    static private boolean flag_runs_printed = false; // If the results for all of the bytes received has been printed
+    static private String fq_string = new String();   // String to write all fq_count values
     // Variables for tests
 
 //    static protected short dataToRecieve[] =  { 7, 7, 7, 7, 7, 7 };
-    static protected short dataToRecieve[] =  { 1, 7, 5, 4, 19, 1 };
+    static private short dataToRecieve[] =  { 1, 7, 5, 4, 19, 1 };
     static private int size = 16;                                          // Size of the possible number to be received
     static private int dataExpected[] = new int[size];                     // A value of dataToReceive but in bits
     static private int receptionCount = 0;                                 // Number of dataToReceive values already analyzed
     static private int receptivity[] = new int[dataToRecieve.length];      // Checking if the value of the byte is correct
+    static private double receptivity_bit[] = new double[12];                    // Sum of all the bits previously evaluated
     static private long lastEmpty = currentTimeMillis();                   // Last time empty equals true
     static private double corrects[] = new double[dataToRecieve.length];   // Sum of all past values from receptivity
     static private int allruns = 1;                                        // All runs from receptivity
@@ -128,7 +129,9 @@ public class FrequencyCalculator {
 
     public double getFreq() {
         boolean [] fq = new boolean[12];
-        boolean flag = false;               // A bit was found
+        boolean flag = false;                        // A bit was found
+        boolean invalid_freq = false;                // No 0 or 1 was detected
+        String invalid_freq_string = new String();   // A string to be placed the wrong freqs
 
         for (boolean t : fq){
             t = false;
@@ -157,19 +160,92 @@ public class FrequencyCalculator {
             }
         }
 
-        if (spectrumAmpOutDB[116] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[0] = true;
-        if (spectrumAmpOutDB[117] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[1] = true;
-        if (spectrumAmpOutDB[118] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[2] = true;
-        if (spectrumAmpOutDB[119] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[3] = true;
-        if (spectrumAmpOutDB[120] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[4] = true;
-        if (spectrumAmpOutDB[121] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[5] = true;
-        if (spectrumAmpOutDB[122] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[6] = true;
-        if (spectrumAmpOutDB[123] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[7] = true;
-        if (spectrumAmpOutDB[124] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[8] = true;
-        if (spectrumAmpOutDB[125] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[9] = true;
-        if (spectrumAmpOutDB[126] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[10] = true;
-        if (spectrumAmpOutDB[127] > (spectrumAmpOutDB[113]-3) && spectrumAmpOutDB[113] > -60) fq[11] = true;
+        if (spectrumAmpOutDB[113] > -60) {
+            if (spectrumAmpOutDB[116] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[116] > -50)
+                fq[0] = true;
+            else if (spectrumAmpOutDB[116] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("1 - ");
+            }
 
+            if (spectrumAmpOutDB[117] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[117] > -50)
+                fq[1] = true;
+            else if (spectrumAmpOutDB[117] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("2 - ");
+            }
+
+            if (spectrumAmpOutDB[118] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[118] > -50)
+                fq[2] = true;
+            else if (spectrumAmpOutDB[118] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("3 - ");
+            }
+
+            if (spectrumAmpOutDB[119] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[119] > -50)
+                fq[3] = true;
+            else if (spectrumAmpOutDB[119] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("4 - ");
+            }
+
+            if (spectrumAmpOutDB[120] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[120] > -50)
+                fq[4] = true;
+            else if (spectrumAmpOutDB[120] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("5 - ");
+            }
+
+            if (spectrumAmpOutDB[121] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[121] > -50)
+                fq[5] = true;
+            else if (spectrumAmpOutDB[121] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("6 - ");
+            }
+
+            if (spectrumAmpOutDB[122] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[122] > -50)
+                fq[6] = true;
+            else if (spectrumAmpOutDB[122] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("7 - ");
+            }
+
+            if (spectrumAmpOutDB[123] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[123] > -50)
+                fq[7] = true;
+            else if (spectrumAmpOutDB[123] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("8 - ");
+            }
+
+            if (spectrumAmpOutDB[124] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[124] > -50)
+                fq[8] = true;
+            else if (spectrumAmpOutDB[124] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("9 - ");
+            }
+
+            if (spectrumAmpOutDB[125] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[125] > -50)
+                fq[9] = true;
+            else if (spectrumAmpOutDB[125] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("10 - ");
+            }
+
+            if (spectrumAmpOutDB[126] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[126] > -50)
+                fq[10] = true;
+            else if (spectrumAmpOutDB[126] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("11 - ");
+            }
+
+            if (spectrumAmpOutDB[127] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[127] > -50)
+                fq[11] = true;
+            else if (spectrumAmpOutDB[127] < -60){
+                invalid_freq = true;
+                invalid_freq_string = invalid_freq_string.concat("12");
+            }
+
+        }
 
         int sampleRate = 44100;
 //        System.out.printf("maxampfreq: %.2f freq index: %.0f fftlen: %d amplitude: %f\n",maxAmpFreq * sampleRate / fftLen,maxAmpFreq,fftLen,spectrumAmpOutDB[(int)maxAmpFreq]);
@@ -187,6 +263,11 @@ public class FrequencyCalculator {
                     maxAmpFreq += xPeak * sampleRate / fftLen;
                 }
             }
+        }
+
+        if (invalid_freq){
+//            System.out.printf("An invalid frequency was found in %s !\n",invalid_freq_string);
+            return maxAmpFreq;
         }
 
         int q = 1;
@@ -209,8 +290,8 @@ public class FrequencyCalculator {
 
         num++;
 
-        if (!flag && flag_new_byte && (currentTimeMillis()-lastEmpty)>1000){      // If a bit wasn't found on this run, the array is not empty and 1 sec has been passed since the byte started to be analyzed
-            System.out.println("Empty T: "+ Long.toString(currentTimeMillis()-lastEmpty));
+        if (!flag && flag_new_byte && (currentTimeMillis()-lastEmpty)>100){      // If a bit wasn't found on this run, the array is not empty and 1 sec has been passed since the byte started to be analyzed
+//            System.out.println("Empty T: "+ Long.toString(currentTimeMillis()-lastEmpty));
             System.out.flush();
             if (receptionCount == 0) {                                            // If a new set of bytes is being analyzed
                 Assert.assertEquals(true,empty);
@@ -225,12 +306,15 @@ public class FrequencyCalculator {
                 assert dataExpected[q] == 1 || dataExpected[q] == 0;
 
                 if (dataExpected[q] == 1 && dataExpected[q] > j && ((double) j/num < (double) 2/3) ){
-                    System.out.printf("Look: expected %d < received %d - percentage: %.2f - local %d - reception %d\n",dataExpected[q], j, (double) j/num, q+1, receptionCount+1);
+//                    System.out.printf("Look: expected %d < received %d - percentage: %.2f - local %d - reception %d\n",dataExpected[q], j, (double) j/num, q+1, receptionCount+1);
                     receptivity[receptionCount] = 0;
                 }
                 else if (dataExpected[q] == 0 && dataExpected[q] < j && ((double) j/num >= (double) 2/3)){
-                    System.out.printf("Look: expected %d >= received %d - percentage: %.2f - local %d - reception %d\n",dataExpected[q], j, (double) j/num, q+1, receptionCount+1);
+//                    System.out.printf("Look: expected %d >= received %d - percentage: %.2f - local %d - reception %d\n",dataExpected[q], j, (double) j/num, q+1, receptionCount+1);
                     receptivity[receptionCount] = 0;
+                }
+                else {
+                    receptivity_bit[q]++;
                 }
 
                 fq_string = fq_string.concat(Integer.toString(q+1)+" "+Integer.toString(j)+" - ");
@@ -240,7 +324,7 @@ public class FrequencyCalculator {
             Arrays.fill(fq_count,0);
             flag_new_byte = false;
 //            lastEmpty = currentTimeMillis();
-            System.out.printf("Number of times found freqs: %s - num: %.0f\n",fq_string,num);
+//            System.out.printf("Number of times found freqs: %s - num: %.0f\n",fq_string,num);
             System.out.flush();
             fq_string = "";
             num = 0;
@@ -250,7 +334,7 @@ public class FrequencyCalculator {
             receptionCount++;
             if (receptionCount >= dataToRecieve.length) {
                 receptionCount = 0;
-                System.out.println("Correctness: "+Arrays.toString(receptivity)+"\n");
+//                System.out.println("Correctness: "+Arrays.toString(receptivity)+"\n");
 //                System.out.println("All bytes read!\n");
                 addToAllArrayIndexes(corrects,receptivity);
                 empty = true;
@@ -261,19 +345,27 @@ public class FrequencyCalculator {
         }
 
         if (!empty && (currentTimeMillis()-lastEmpty)>2000) {
-            System.out.println("Current array :"+Arrays.toString(fq_count)+" time: "+ Long.toString(currentTimeMillis()-lastEmpty));
+//            System.out.println("Current array :"+Arrays.toString(fq_count)+" time: "+ Long.toString(currentTimeMillis()-lastEmpty));
             Arrays.fill(fq_count,0);
             empty = true;
             flag_new_byte = false;
             fq_string = "";
             receptionCount = 0;
             allruns++;
-            System.out.printf("Silence greater than 2s\n");
+            System.out.println("Silence greater than 2s\n");
             System.out.flush();
         }
 
         if ((currentTimeMillis()-lastEmpty)>5000 && !flag_runs_printed){
-            System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f] - number of runs : %d\n", corrects[0]/allruns,corrects[1]/allruns,corrects[2]/allruns,corrects[3]/allruns,corrects[4]/allruns,corrects[5]/allruns,allruns-1);
+
+            double percent = 0;
+            double allbits = allruns*dataToRecieve.length;
+            for (double k :  corrects){
+                percent += k;
+            }
+            System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f] - number of runs : %d - percentage: %.4f \n", corrects[0]/(allruns),corrects[1]/(allruns),corrects[2]/(allruns),corrects[3]/(allruns),corrects[4]/(allruns),corrects[5]/(allruns),allruns,percent/(allruns*6));
+            System.out.printf("All bits : [%.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f] - number of bits : %.0f\n", receptivity_bit[0]/(allbits),receptivity_bit[1]/(allbits),receptivity_bit[2]/(allbits),receptivity_bit[3]/(allbits),receptivity_bit[4]/(allbits),receptivity_bit[5]/(allbits),receptivity_bit[6]/(allbits),receptivity_bit[7]/(allbits),receptivity_bit[8]/(allbits),receptivity_bit[9]/(allbits),receptivity_bit[10]/(allbits),receptivity_bit[11]/(allbits),allbits);
+
             flag_runs_printed = true;
         }
 
