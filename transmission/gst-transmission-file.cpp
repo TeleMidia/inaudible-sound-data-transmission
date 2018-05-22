@@ -259,40 +259,40 @@ main ()
   player13.setVolume ("0.7");
   player13.start ();
 
-  player1.setVolume ("0.005");
+  player1.setVolume ("0.3");
   player1.start ();
 
-  player2.setVolume ("0.005");
+  player2.setVolume ("0.3");
   player2.start ();
 
-  player3.setVolume ("0.005");
+  player3.setVolume ("0.3");
   player3.start ();
 
-  player4.setVolume ("0.005");
+  player4.setVolume ("0.3");
   player4.start ();
 
-  player5.setVolume ("0.005");
+  player5.setVolume ("0.3");
   player5.start ();
 
-  player6.setVolume ("0.005");
+  player6.setVolume ("0.3");
   player6.start ();
 
-  player7.setVolume ("0.005");
+  player7.setVolume ("0.3");
   player7.start ();
 
-  player8.setVolume ("0.005");
+  player8.setVolume ("0.3");
   player8.start ();
 
-  player9.setVolume ("0.005");
+  player9.setVolume ("0.3");
   player9.start ();
 
-  player10.setVolume ("0.005");
+  player10.setVolume ("0.3");
   player10.start ();
 
-  player11.setVolume ("0.005");
+  player11.setVolume ("0.3");
   player11.start ();
 
-  player12.setVolume ("0.005");
+  player12.setVolume ("0.3");
   player12.start ();
 
   while (true)
@@ -302,8 +302,9 @@ main ()
       auto start = std::chrono::system_clock::now ();
 
       short dataToSend[]
-          = { 8, 7, 64, 7, 8, 7 }; // highest number should be 2^13-1 = 8191
+          // = { 7, 7, 7, 7, 7, 7 }; // highest number should be 2^13-1 = 8191
       // = { 1, 7, 5, 4, 19, 1 }; // highest number should be 2^13-1 = 8191
+      = { 1, 17, 33, 49, 65, 81};
       // = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4095 }; //
       // highest number should be 2^13-1 = 8191
 
@@ -327,73 +328,73 @@ main ()
           if (number[0])
         player1.setVolume ("1");
       else
-        player1.setVolume ("0.005");
+        player1.setVolume ("0.3");
       if (number[1])
         player2.setVolume ("1");
       else
-        player2.setVolume ("0.005");
+        player2.setVolume ("0.3");
       if (number[2])
         player3.setVolume ("1");
       else
-        player3.setVolume ("0.005");
+        player3.setVolume ("0.3");
       if (number[3])
         player4.setVolume ("1");
       else
-        player4.setVolume ("0.005");
+        player4.setVolume ("0.3");
       if (number[4])
         player5.setVolume ("1");
       else
-        player5.setVolume ("0.005");
+        player5.setVolume ("0.3");
       if (number[5])
         player6.setVolume ("1");
       else
-        player6.setVolume ("0.005");
+        player6.setVolume ("0.3");
       if (number[6])
         player7.setVolume ("1");
       else
-        player7.setVolume ("0.005");
+        player7.setVolume ("0.3");
       if (number[7])
         player8.setVolume ("1");
       else
-        player8.setVolume ("0.005");
+        player8.setVolume ("0.3");
       if (number[8])
         player9.setVolume ("1");
       else
-        player9.setVolume ("0.005");
+        player9.setVolume ("0.3");
       if (number[9])
         player10.setVolume ("1");
       else
-        player10.setVolume ("0.005");
+        player10.setVolume ("0.3");
       if (number[10])
         player11.setVolume ("1");
       else
-        player11.setVolume ("0.005");
+        player11.setVolume ("0.3");
       if (number[11])
         player12.setVolume ("1");
       else
-        player12.setVolume ("0.005");
+        player12.setVolume ("0.3");
 
-          std::this_thread::sleep_for (std::chrono::milliseconds (1300));
+          std::this_thread::sleep_for (std::chrono::milliseconds (100));
 
           for (int t = 0; t < size; t++)
             {
               number[t] = 0;
             }
 
-          player1.setVolume ("0.005");
-          player2.setVolume ("0.005");
-          player3.setVolume ("0.005");
-          player4.setVolume ("0.005");
-          player5.setVolume ("0.005");
-          player6.setVolume ("0.005");
-          player7.setVolume ("0.005");
-          player8.setVolume ("0.005");
-          player9.setVolume ("0.005");
-          player10.setVolume ("0.005");
-          player11.setVolume ("0.005");
-          player12.setVolume ("0.005");
+          player1.setVolume ("0.3");
+          player2.setVolume ("0.3");
+          player3.setVolume ("0.3");
+          player4.setVolume ("0.3");
+          player5.setVolume ("0.3");
+          player6.setVolume ("0.3");
+          player7.setVolume ("0.3");
+          player8.setVolume ("0.3");
+          player9.setVolume ("0.3");
+          player10.setVolume ("0.3");
+          player11.setVolume ("0.3");
+          player12.setVolume ("0.3");
 
-          std::this_thread::sleep_for (std::chrono::milliseconds (150));
+          std::this_thread::sleep_for (std::chrono::milliseconds (1800));
         }
 
       auto end = std::chrono::system_clock::now ();
