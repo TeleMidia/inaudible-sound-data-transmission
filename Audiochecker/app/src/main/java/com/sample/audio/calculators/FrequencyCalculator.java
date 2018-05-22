@@ -1,7 +1,17 @@
 package com.sample.audio.calculators;
 
+import android.view.View;
+import android.widget.TextView;
+import android.widget.ImageView;
+import com.sample.MainActivity;
+import android.app.Activity;
+
+import com.sample.MainActivity;
+import android.test.InstrumentationTestCase;
+
 import junit.framework.Assert;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static java.lang.System.currentTimeMillis;
@@ -19,23 +29,29 @@ public class FrequencyCalculator {
     private double[][] spectrumAmpOutArray;
 
     static private double num = 0;                    // Counter for the number of times when a freq was found
-    static private int fq_count[] = new int[12];      // Array of number of times where the freq was found
+    static private int size_current = 12;              // Size of the number of bits received
+    static private int fq_count[] = new int[size_current];       // Array of number of times where the freq was found
     static private boolean empty = true;              // If the receptivity array is empty
     static private boolean flag_new_byte = false;     // If the fq_count array is empty
     static private boolean flag_runs_printed = false; // If the results for all of the bytes received has been printed
     static private String fq_string = new String();   // String to write all fq_count values
     // Variables for tests
 
-//    static protected short dataToRecieve[] =  { 7, 7, 7, 7, 7, 7 };
-    static private short dataToRecieve[] =  { 1, 7, 5, 4, 19, 1 };
+//    static private short dataToRecieve[] =  { 1, 7, 5, 4, 19, 1 };
+    static private short dataToRecieve[] =  { 1, 17, 33, 49, 65, 81 };
     static private int size = 16;                                          // Size of the possible number to be received
     static private int dataExpected[] = new int[size];                     // A value of dataToReceive but in bits
     static private int receptionCount = 0;                                 // Number of dataToReceive values already analyzed
     static private int receptivity[] = new int[dataToRecieve.length];      // Checking if the value of the byte is correct
-    static private double receptivity_bit[] = new double[12];                    // Sum of all the bits previously evaluated
+    static private double receptivity_bit[] = new double[size_current];               // Sum of all the bits previously evaluated
+    static private double receptivity_current[] = new double[size_current];
     static private long lastEmpty = currentTimeMillis();                   // Last time empty equals true
     static private double corrects[] = new double[dataToRecieve.length];   // Sum of all past values from receptivity
     static private int allruns = 1;                                        // All runs from receptivity
+    static private int prog_number = 0;                                    // Number of the show is airing
+    static private int prog_min = 0;                                       // Current minute of the show
+    static private TextView textMinute;                                    // Object to hold id for the minute text field
+    static private ImageView imageApp;                                     // Object to hold id for the app image
 
     private int fftLen;
     private int spectrumAmpPt;
@@ -127,8 +143,13 @@ public class FrequencyCalculator {
         }
     }
 
+    static public void setViews (TextView text, ImageView image){
+        textMinute = text;
+        imageApp = image;
+    }
+
     public double getFreq() {
-        boolean [] fq = new boolean[12];
+        boolean [] fq = new boolean[size_current];
         boolean flag = false;                        // A bit was found
         boolean invalid_freq = false;                // No 0 or 1 was detected
         String invalid_freq_string = new String();   // A string to be placed the wrong freqs
@@ -313,14 +334,68 @@ public class FrequencyCalculator {
 //                    System.out.printf("Look: expected %d >= received %d - percentage: %.2f - local %d - reception %d\n",dataExpected[q], j, (double) j/num, q+1, receptionCount+1);
                     receptivity[receptionCount] = 0;
                 }
-                else {
+                else { // Data is correct
                     receptivity_bit[q]++;
+                    if (dataExpected[q] == 1)
+                        receptivity_current[q] = 1;
+                    else
+                        receptivity_current[q] = 0;
                 }
 
                 fq_string = fq_string.concat(Integer.toString(q+1)+" "+Integer.toString(j)+" - ");
 //                System.out.printf("\nNumber of times found freq %d - %d\n",q+1,j);
                 q++;
             }
+
+//            System.out.println(Arrays.toString(receptivity_current));
+
+            prog_min = 0;
+            prog_number = 0;
+            for (int j = 0; j < size_current; j++){
+                if (receptivity_current[j] == 1) {
+                    if (j < 4) {
+                        prog_number += Math.pow(2, j);
+                    } else {
+                        prog_min += Math.pow(2, j-4);
+                    }
+                }
+            }
+
+//            System.out.printf("Program Number: %d - Minute:%d\n",prog_number,prog_min);
+
+            if (prog_number != 0b1){
+                textMinute.post(new Runnable() {
+                    public void run() {
+                        textMinute.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+            else if (prog_number == 0b1){
+
+                textMinute.post(new Runnable() {
+                    public void run() {
+                        textMinute.setText("Min: "+Integer.toString(prog_min));
+                        textMinute.setVisibility(View.VISIBLE);
+                    }
+                });
+
+
+                if (prog_min == 0b11){
+                    imageApp.post(new Runnable() {
+                        public void run() {
+                            imageApp.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
+                else {
+                    imageApp.post(new Runnable() {
+                        public void run() {
+                            imageApp.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
+            }
+
             Arrays.fill(fq_count,0);
             flag_new_byte = false;
 //            lastEmpty = currentTimeMillis();

@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.sample.audio.calculators.AudioCalculator;
+import com.sample.audio.calculators.FrequencyCalculator;
 import com.sample.audio.core.Callback;
 import com.sample.audio.core.Recorder;
 
@@ -25,6 +28,8 @@ public class MainActivity extends Activity {
     private TextView textAmplitude;
     private TextView textDecibel;
     private TextView textFrequency;
+    static private TextView textMinute;
+    static private ImageView imageApp;
 
     double average=0, num=0;
 
@@ -49,6 +54,10 @@ public class MainActivity extends Activity {
         textAmplitude = (TextView) findViewById(R.id.textAmplitude);
         textDecibel = (TextView) findViewById(R.id.textDecibel);
         textFrequency = (TextView) findViewById(R.id.textFrequency);
+        textMinute = (TextView) findViewById(R.id.textMinute);
+        imageApp = (ImageView) findViewById(R.id.imageApp);
+
+        FrequencyCalculator.setViews(textMinute,imageApp);
     }
 
     private void CheckForRecordAudioPermission() {
@@ -122,6 +131,7 @@ public class MainActivity extends Activity {
                     textFrequency.setText(hz);
                 }
             });
+
         }
     };
 
