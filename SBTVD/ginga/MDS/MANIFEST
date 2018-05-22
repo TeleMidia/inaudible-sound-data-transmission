@@ -1,0 +1,5 @@
+{
+    "appName": "Siggen",
+    "appEntryPoint": "ncl/siggen.ncl",
+    "appIcon": "app_img.png"
+}

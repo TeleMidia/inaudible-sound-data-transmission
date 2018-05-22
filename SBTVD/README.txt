@@ -1,0 +1,1 @@
+Add the folder "Ginga" to the root of your storage drive and plug it in to the Set-top box
