@@ -57,11 +57,13 @@
                     "/usr/lib/x86_64-linux-gnu/glib-2.0/include/",
                     "/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include/gst",
                     "/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include/"
-                    
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
-            }
+            },
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
         },
         {
             "name": "Win32",
@@ -85,5 +87,5 @@
             }
         }
     ],
-    "version": 3
+    "version": 4
 }

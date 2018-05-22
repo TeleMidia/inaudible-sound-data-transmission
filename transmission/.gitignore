@@ -52,5 +52,8 @@
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 
+# .au and .aup files from Audacity
+*.au
+*.aup
 
 # End of https://www.gitignore.io/api/c++,gnu,linux
