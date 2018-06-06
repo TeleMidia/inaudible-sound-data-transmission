@@ -12,10 +12,6 @@
 	</descriptorBase>
 
 	<connectorBase>
-		<causalConnector id="onBeginStart">
-			<simpleCondition role="onBegin"/>
-			<simpleAction role="start"/>
-		</causalConnector>
 		<causalConnector id="onBeginSet">
 			<connectorParam name="var"/>
 			<simpleCondition role="onBegin"/>
@@ -281,6 +277,7 @@
 
 	<link xconnector="onEndStart">
 		<bind role="onEnd" 	 component="audio1"/>
+		<bind role="start"   component="audio1"/>		
 		<bind role="start"   component="audio2"/>		
 		<bind role="start"   component="audio3"/>		
 		<bind role="start"   component="audio4"/>		
