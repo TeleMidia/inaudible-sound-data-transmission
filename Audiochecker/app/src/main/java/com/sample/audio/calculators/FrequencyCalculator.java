@@ -1,17 +1,11 @@
 package com.sample.audio.calculators;
 
 import android.view.View;
-import android.widget.TextView;
 import android.widget.ImageView;
-import com.sample.MainActivity;
-import android.app.Activity;
-
-import com.sample.MainActivity;
-import android.test.InstrumentationTestCase;
+import android.widget.TextView;
 
 import junit.framework.Assert;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static java.lang.System.currentTimeMillis;
@@ -29,7 +23,7 @@ public class FrequencyCalculator {
     private double[][] spectrumAmpOutArray;
 
     static private double num = 0;                    // Counter for the number of times when a freq was found
-    static private int size_current = 12;              // Size of the number of bits received
+    static private int size_current = 15;              // Size of the number of bits received
     static private int fq_count[] = new int[size_current];       // Array of number of times where the freq was found
     static private boolean empty = true;              // If the receptivity array is empty
     static private boolean flag_new_byte = false;     // If the fq_count array is empty
@@ -39,19 +33,23 @@ public class FrequencyCalculator {
 
 //    static private short dataToRecieve[] =  { 1, 7, 5, 4, 19, 1 };
     static private short dataToRecieve[] =  { 1, 17, 33, 49, 65, 81 };
-    static private int size = 16;                                          // Size of the possible number to be received
-    static private int dataExpected[] = new int[size];                     // A value of dataToReceive but in bits
-    static private int receptionCount = 0;                                 // Number of dataToReceive values already analyzed
-    static private int receptivity[] = new int[dataToRecieve.length];      // Checking if the value of the byte is correct
-    static private double receptivity_bit[] = new double[size_current];               // Sum of all the bits previously evaluated
-    static private double receptivity_current[] = new double[size_current];
-    static private long lastEmpty = currentTimeMillis();                   // Last time empty equals true
-    static private double corrects[] = new double[dataToRecieve.length];   // Sum of all past values from receptivity
-    static private int allruns = 1;                                        // All runs from receptivity
-    static private int prog_number = 0;                                    // Number of the show is airing
-    static private int prog_min = 0;                                       // Current minute of the show
-    static private TextView textMinute;                                    // Object to hold id for the minute text field
-    static private ImageView imageApp;                                     // Object to hold id for the app image
+    static private int size = 11;                                               // Size of the possible number to be received
+    static private int dataExpected[] = new int[size];                          // A value of dataToReceive but in bits
+    static private Double dataExpectedHamming[][] = null;                       // A value of dataToReceive but in bits - version for hamming codes
+    static private int receptionCount = 0;                                      // Number of dataToReceive values already analyzed
+    static private int receptivity[] = new int[dataToRecieve.length];           // Checking if the value of the byte is correct
+    static private double receptivity_bit[] = new double[size_current];         // Sum of all the bits previously evaluated
+    static private double receptivity_current[] = new double[size_current];     // Value of the current receptivity bit after evaluation
+    static private long lastEmpty = currentTimeMillis();                        // Last time empty equals true
+    static private double corrects[] = new double[dataToRecieve.length];        // Sum of all past values from receptivity
+    static private int allruns = 1;                                             // All runs from receptivity
+    static private int prog_number = 0;                                         // Number of the show is airing
+    static private int prog_min = 0;                                            // Current minute of the show
+    static private TextView textMinute;                                         // Object to hold id for the minute text field
+    static private ImageView imageApp;                                          // Object to hold id for the app image
+    static private int silence_quant = 0;                                       // Quantity of continuos silences detected
+    static private boolean silence_time = false;                                // If it is during silence or not
+    Double[][] matrix = null;
 
     private int fftLen;
     private int spectrumAmpPt;
@@ -150,9 +148,20 @@ public class FrequencyCalculator {
 
     public double getFreq() {
         boolean [] fq = new boolean[size_current];
-        boolean flag = false;                        // A bit was found
-        boolean invalid_freq = false;                // No 0 or 1 was detected
-        String invalid_freq_string = new String();   // A string to be placed the wrong freqs
+        boolean flag = false;                                   // A bit was found
+        boolean invalid_freq = false;                           // No 0 or 1 was detected
+        String invalid_freq_string = new String();              // A string to be placed the wrong freqs
+        String tmpdataExpectedHamming = new String();           // A string to store the current data for a generateMatrix()
+        int silence_tmp = 0;                                    // Temporary variable for counting silences
+        Double checkMatrix[][] = new Double[size_current][1];   // Matrix for the received values after being checked
+        int sumCheckMatrix = 0;                                 // Sum for the checkMatrix index
+
+//        matrix = Hamming_Code_Gen.generateMatrix("11000000000");
+//
+//        System.out.println("Matrix Here: "+ Hamming_Code_Gen.doubleToIntMatrix(matrix));
+//        Hamming_Code_Gen.printMatrix(Hamming_Code_Gen.checkmatrix(matrix));
+
+
 
         for (boolean t : fq){
             t = false;
@@ -210,56 +219,56 @@ public class FrequencyCalculator {
                 invalid_freq_string = invalid_freq_string.concat("4 - ");
             }
 
-            if (spectrumAmpOutDB[120] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[120] > -50)
+            if (spectrumAmpOutDB[120] > (spectrumAmpOutDB[113] - 7) && spectrumAmpOutDB[120] > -50)
                 fq[4] = true;
             else if (spectrumAmpOutDB[120] < -60){
                 invalid_freq = true;
                 invalid_freq_string = invalid_freq_string.concat("5 - ");
             }
 
-            if (spectrumAmpOutDB[121] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[121] > -50)
+            if (spectrumAmpOutDB[121] > (spectrumAmpOutDB[113] - 7) && spectrumAmpOutDB[121] > -50)
                 fq[5] = true;
             else if (spectrumAmpOutDB[121] < -60){
                 invalid_freq = true;
                 invalid_freq_string = invalid_freq_string.concat("6 - ");
             }
 
-            if (spectrumAmpOutDB[122] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[122] > -50)
+            if (spectrumAmpOutDB[122] > (spectrumAmpOutDB[113] - 7) && spectrumAmpOutDB[122] > -50)
                 fq[6] = true;
             else if (spectrumAmpOutDB[122] < -60){
                 invalid_freq = true;
                 invalid_freq_string = invalid_freq_string.concat("7 - ");
             }
 
-            if (spectrumAmpOutDB[123] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[123] > -50)
+            if (spectrumAmpOutDB[123] > (spectrumAmpOutDB[113] - 10) && spectrumAmpOutDB[123] > -50)
                 fq[7] = true;
             else if (spectrumAmpOutDB[123] < -60){
                 invalid_freq = true;
                 invalid_freq_string = invalid_freq_string.concat("8 - ");
             }
 
-            if (spectrumAmpOutDB[124] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[124] > -50)
+            if (spectrumAmpOutDB[124] > (spectrumAmpOutDB[113] - 10) && spectrumAmpOutDB[124] > -50)
                 fq[8] = true;
             else if (spectrumAmpOutDB[124] < -60){
                 invalid_freq = true;
                 invalid_freq_string = invalid_freq_string.concat("9 - ");
             }
 
-            if (spectrumAmpOutDB[125] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[125] > -50)
+            if (spectrumAmpOutDB[125] > (spectrumAmpOutDB[113] - 10) && spectrumAmpOutDB[125] > -50)
                 fq[9] = true;
             else if (spectrumAmpOutDB[125] < -60){
                 invalid_freq = true;
                 invalid_freq_string = invalid_freq_string.concat("10 - ");
             }
 
-            if (spectrumAmpOutDB[126] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[126] > -50)
+            if (spectrumAmpOutDB[126] > (spectrumAmpOutDB[113] - 10) && spectrumAmpOutDB[126] > -50)
                 fq[10] = true;
             else if (spectrumAmpOutDB[126] < -60){
                 invalid_freq = true;
                 invalid_freq_string = invalid_freq_string.concat("11 - ");
             }
 
-            if (spectrumAmpOutDB[127] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[127] > -50)
+            if (spectrumAmpOutDB[127] > (spectrumAmpOutDB[113] - 7) && spectrumAmpOutDB[127] > -50)
                 fq[11] = true;
             else if (spectrumAmpOutDB[127] < -60){
                 invalid_freq = true;
@@ -286,10 +295,10 @@ public class FrequencyCalculator {
             }
         }
 
-        if (invalid_freq){
+//        if (invalid_freq){
 //            System.out.printf("An invalid frequency was found in %s !\n",invalid_freq_string);
-            return maxAmpFreq;
-        }
+//            return maxAmpFreq;
+//        }
 
         int q = 1;
         for (boolean t : fq){
@@ -304,14 +313,39 @@ public class FrequencyCalculator {
                 }
             }
 
+//            if (t == false && q <= 8)
+//                silence_tmp++;
+
 //            System.out.println("is: "+Boolean.toString(t)+" Freq found: "+q+" "+ spectrumAmpOutDB[115+q]+ " "+ spectrumAmpOutDB[113]);
             q++;
             t = false;
         }
 
+//        if (silence_tmp >= 8 )
+//            silence_quant++;
+//        else
+//            silence_quant = 0;
+
         num++;
 
-        if (!flag && flag_new_byte && (currentTimeMillis()-lastEmpty)>100){      // If a bit wasn't found on this run, the array is not empty and 1 sec has been passed since the byte started to be analyzed
+//        if (silence_quant >= 3) {
+//            silence_time = true;
+//            System.out.println("Silence now");
+//        }
+//        else
+//            System.out.println("Not in silence");
+
+//        bin(dataToRecieve[0],dataExpected,size);
+//        for (int tmpIntValue: dataExpected ) {
+//            tmpdataExpectedHamming += Integer.toString(tmpIntValue);
+//        }
+//        System.out.println("Tmp size: "+tmpdataExpectedHamming);
+//        dataExpectedHamming = Hamming_Code_Gen.generateMatrix(tmpdataExpectedHamming);
+//        System.out.println("Matrix Here: "+ Hamming_Code_Gen.doubleToIntMatrix(dataExpectedHamming));
+//        Hamming_Code_Gen.printMatrix(dataExpectedHamming);
+
+
+        if (!flag && flag_new_byte && (currentTimeMillis()-lastEmpty)>300){      // If a bit wasn't found on this run, the array is not empty and 1 sec has been passed since the byte started to be analyzed
 //            System.out.println("Empty T: "+ Long.toString(currentTimeMillis()-lastEmpty));
             System.out.flush();
             if (receptionCount == 0) {                                            // If a new set of bytes is being analyzed
@@ -320,23 +354,30 @@ public class FrequencyCalculator {
             }
             q=0;
             bin(dataToRecieve[receptionCount],dataExpected,size);
+            for (int tmpIntValue: dataExpected ) {
+                tmpdataExpectedHamming += Integer.toString(tmpIntValue);
+            }
+            dataExpectedHamming = Hamming_Code_Gen.generateMatrix(tmpdataExpectedHamming);
+//            System.out.println("Matrix Here: "+ Hamming_Code_Gen.doubleToIntMatrix(dataExpectedHamming));
+//            Hamming_Code_Gen.printMatrix(dataExpectedHamming);
+
             for (int j: fq_count) {
 
 //                System.out.printf("How are the numbers? %.2f < %.2f - place %d\n",(double) j/num, (double) 2/3,q+1);
 
-                assert dataExpected[q] == 1 || dataExpected[q] == 0;
+                assert dataExpectedHamming[q][0] == 1 || dataExpectedHamming[q][0] == 0;
 
-                if (dataExpected[q] == 1 && dataExpected[q] > j && ((double) j/num < (double) 2/3) ){
-//                    System.out.printf("Look: expected %d < received %d - percentage: %.2f - local %d - reception %d\n",dataExpected[q], j, (double) j/num, q+1, receptionCount+1);
+                if (dataExpectedHamming[q][0] == 1 && dataExpectedHamming[q][0] >  j && ((double) j/num < (double) 2/3) ){
+//                    System.out.printf("Look: expected %f < received %d - percentage: %.2f - local %d - reception %d\n",dataExpectedHamming[q][0], j, (double) j/num, q+1, receptionCount+1);
                     receptivity[receptionCount] = 0;
                 }
-                else if (dataExpected[q] == 0 && dataExpected[q] < j && ((double) j/num >= (double) 2/3)){
-//                    System.out.printf("Look: expected %d >= received %d - percentage: %.2f - local %d - reception %d\n",dataExpected[q], j, (double) j/num, q+1, receptionCount+1);
+                else if (dataExpectedHamming[q][0] == 0 && dataExpectedHamming[q][0] < j && ((double) j/num >= (double) 2/3)){
+//                    System.out.printf("Look: expected %f >= received %d - percentage: %.2f - local %d - reception %d\n",dataExpectedHamming[q][0], j, (double) j/num, q+1, receptionCount+1);
                     receptivity[receptionCount] = 0;
                 }
                 else { // Data is correct
                     receptivity_bit[q]++;
-                    if (dataExpected[q] == 1)
+                    if (dataExpectedHamming[q][0] == 1)
                         receptivity_current[q] = 1;
                     else
                         receptivity_current[q] = 0;
@@ -347,16 +388,46 @@ public class FrequencyCalculator {
                 q++;
             }
 
+            q = 0;
+            for (Double tmpDoubleValue: receptivity_current) {
+                checkMatrix[q][0] = tmpDoubleValue;
+                q++;
+            }
+
+            checkMatrix = Hamming_Code_Gen.checkmatrix(checkMatrix);
+//            System.out.println("Check matrix:");
+//            Hamming_Code_Gen.printMatrix(checkMatrix);
+
+            q = 0;
+            for (Double tmpSumAr[]: checkMatrix) {
+                for (Double tmpSumVal: tmpSumAr) {
+                    sumCheckMatrix += (int) (Math.pow(2,q)*tmpSumVal);
+                    q++;
+                }
+            }
+//            System.out.printf("Check Value: %d - number of indexes: %d\n",sumCheckMatrix,q);
+
+            if (sumCheckMatrix > 0){
+                if (receptivity_current[sumCheckMatrix-1] == 1)
+                    receptivity_current[sumCheckMatrix-1] = 0;
+                else
+                    receptivity_current[sumCheckMatrix-1] = 1;
+            }
+
 //            System.out.println(Arrays.toString(receptivity_current));
 
             prog_min = 0;
             prog_number = 0;
             for (int j = 0; j < size_current; j++){
                 if (receptivity_current[j] == 1) {
-                    if (j < 4) {
-                        prog_number += Math.pow(2, j);
-                    } else {
-                        prog_min += Math.pow(2, j-4);
+                    if (j == 2) {
+                        prog_number += Math.pow(2, j-2);
+                    }
+                    else if (j >= 4 && j <= 6 ){
+                        prog_number += Math.pow(2, j-3);
+                    }
+                    else if (j >= 8 && j <= 11) {
+                        prog_min += Math.pow(2, j-8);
                     }
                 }
             }
@@ -430,6 +501,8 @@ public class FrequencyCalculator {
             System.out.println("Silence greater than 2s\n");
             System.out.flush();
         }
+
+//        silence_time = false;
 
         if ((currentTimeMillis()-lastEmpty)>5000 && !flag_runs_printed){
 

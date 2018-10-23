@@ -227,6 +227,126 @@ bin (unsigned short v, int number[], int size)
     number[size - 1] = (v >> (size - 1)) & 1;
 }
 
+int* generateMatrix (string msg)
+{ // Generates a Hamming code according to the number of data bits
+  int r = 0, m = msg.length ();
+  // calculate number of parity bits needed using m+r+1<=2^r
+  while (true)
+    {
+      if (m + r + 1 <= pow (2, r))
+        {
+          break;
+        }
+      r++;
+    }
+  // System.out.println("Number of parity bits needed : "+r);
+  int transLength = msg.length () + r, temp = 0, temp2 = 0, j = 0;
+  int transMsg[transLength + 1]; //+1 because starts with 1
+  for (int i = 1; i <= transLength; i++)
+    {
+      temp2 = (int) pow (2, temp);
+      if (i % temp2 != 0)
+        {
+          string sym(1, msg[j]);
+          const char *theval = sym.c_str();
+          transMsg[i] = atoi (theval);
+          j++;
+        }
+      else
+        {
+          temp++;
+        }
+    }
+
+  // for(int i=1;i<=transLength;i++)
+  // {
+  // 	System.out.print(transMsg[i]);
+  // }
+  // System.out.println();
+
+  for (int i = 0; i < r; i++)
+    {
+      int smallStep = (int) pow (2, i);
+      int bigStep = smallStep * 2;
+      int start = smallStep, checkPos = start;
+      // System.out.println("Calculating Parity bit for Position :
+      // "+smallStep); System.out.print("Bits to be checked : ");
+      while (true)
+        {
+          for (int k = start; k <= start + smallStep - 1; k++)
+            {
+              checkPos = k;
+              // System.out.print(checkPos+" ");
+              if (k > transLength)
+                {
+                  break;
+                }
+              transMsg[smallStep] = ((int) (transMsg[smallStep])) ^ ((int) (transMsg[checkPos]));
+            }
+          if (checkPos > transLength)
+            {
+              break;
+            }
+          else
+            {
+              start = start + bigStep;
+            }
+        }
+      // System.out.println();
+    }
+  // Display encoded message
+  printf ("Hamming Encoded Message : ");
+  for (int i = 1; i <= transLength; i++)
+  {
+    printf ("%d ",transMsg[i]);
+  }
+  printf("\n");
+
+  int *matrix;
+  matrix  = (int*) malloc((sizeof(int)*transLength));
+
+  
+  for(int i = 0; i < transLength; i++)
+  {
+    matrix[i] = 0;
+  }
+  
+  for (int i = 1; i <= transLength; i++)
+    {
+      matrix[i - 1] = transMsg[i];
+      //  System.arraycopy(transMsg, (i*transLength), matrix[i], 0,
+      //  transLength);
+    }
+  // System.out.println("\n\n"+Integer.toString(matrix.length)+" Here:
+  // "+Arrays.toString(matrix));
+  return matrix;
+}
+
+int hammingBinToI (int * arr){
+  int i;
+  int sum = 0;
+  for (i=0; i < 15; i++){
+    sum += pow(2,i) * arr[i]; 
+  }
+  return sum;
+}
+
+// string intArrayToString(int int_array[], int size_of_array) {
+//   string returnstring = "";
+//   char* strTmp;
+//   for (int temp = 0; temp < size_of_array; temp++)
+//     itoa(int_array[temp],strTmp,10);
+//     returnstring += strTmp;
+//   return returnstring;
+// }
+
+// string intArrayToString(int int_array[], int size_of_array) {
+//   std::stringstream  oss("");
+//   for (int temp = 0; temp < size_of_array; temp++)
+//     oss << int_array[temp];
+//   return oss.str();
+// }
+
 int
 main ()
 {
@@ -234,11 +354,14 @@ main ()
       player8, player9, player10, player11, player12, player13;
 
   int const size = 16;
+  int i;
+  int * transmission;
+  // string strTransmission;
 
   int number[size];
 
   player13.setFreq ("19500");
-  player13.setVolume ("0.7");
+  player13.setVolume ("0.5");
   player13.start ();
 
   player1.setFreq ("20000");
@@ -296,11 +419,13 @@ main ()
       auto start = std::chrono::system_clock::now ();
 
       short dataToSend[]
-          // = { 7, 7, 19, 7, 7, 7  }; // highest number should be 2^13-1 = 4095       
-      = { 1, 17, 33, 49, 65, 81};
+          // = { 7, 7, 19, 7, 7, 7  }; // highest number should be 2^13-1 =
+          // 4095
+          = { 1, 17, 33, 49, 65, 81 };
       // = { 1, 1, 1, 1, 1, 1};
-          // = { 1, 7, 5, 4, 19, 1 }; // highest number should be 2^13-1 = 4095
-          // = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4095 }; // highest number should be 2^13-1 = 4095
+      // = { 1, 7, 5, 4, 19, 1 }; // highest number should be 2^13-1 = 4095
+      // = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4095 }; //
+      // highest number should be 2^13-1 = 4095
 
       for (int t = 0; t < size; t++)
         {
@@ -308,11 +433,34 @@ main ()
         }
 
       for (int i = 0; i < sizeof (dataToSend) / sizeof (dataToSend[0]); i++)
-        {          
+        {
           printf ("number: %d\n", dataToSend[i]);
           bin (dataToSend[i], number, size);
 
           for (int t = 0; t < size; t++)
+            {
+              printf ("%d", number[t]);
+            }
+
+          printf ("\n");
+
+          std::string strTransmission = "";  // String with the data to generate a hamming code
+          for (int k = 0; k < size; k++)
+          {
+             if (!(number[k] == 0 && strTransmission.size() == 0))
+                strTransmission += std::to_string(number[k]);
+          }
+          
+          // printf("string: %s\n",strTransmission.substr(0, 11).c_str());
+
+          // strTransmission = intArrayToString(number,size);
+          transmission = generateMatrix(strTransmission.substr(0, 11));
+          printf("Valor: %d\n", hammingBinToI(transmission));
+
+          bin ((unsigned short) hammingBinToI(transmission), number, size);
+
+          printf ("Hamming Num:");          
+          for (int t = 0; t < 12; t++)
             {
               printf ("%d", number[t]);
             }
@@ -368,7 +516,7 @@ main ()
           else
             player12.setVolume ("0.3");
 
-          std::this_thread::sleep_for (std::chrono::milliseconds (100));
+          std::this_thread::sleep_for (std::chrono::milliseconds (150));
 
           for (int t = 0; t < size; t++)
             {
@@ -387,7 +535,6 @@ main ()
           player10.setVolume ("0.3");
           player11.setVolume ("0.3");
           player12.setVolume ("0.3");
-          
 
           std::this_thread::sleep_for (std::chrono::milliseconds (300));
         }

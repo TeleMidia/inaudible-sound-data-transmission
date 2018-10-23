@@ -11,6 +11,10 @@
 //measure time
 #include <iostream>
 #include <ctime>
+//transmission matrix
+#include <math.h>
+#include <stdlib.h> 
+#include <stdlib.h>
 
 using namespace std;
 
@@ -47,3 +51,5 @@ public:
   // GStreamer callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, GstSigGen *);
 };
+
+int main_message();
