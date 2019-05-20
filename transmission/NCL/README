@@ -1,0 +1,7 @@
+Esta pasta contém duas transmissões que utilizam NCL e LUA
+
+1. Main.ncl
+Esta aplicação transmite a mensagem de 13 frequencias. Presione o botão vermelho para preparar a transmissão e o botão verde logo em seguida para transmitir. No terminal há o debug da transmissão.
+
+2. BgMain.ncl
+Esta aplicação foi feita segundo os moldes da versão do Rock in Rio com poucas alterações. Para transmitir aperte o botão vermelho. Em conjunto há uma pasta para a compilação do aplicativo Android.

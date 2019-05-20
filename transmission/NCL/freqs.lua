@@ -43,6 +43,15 @@ function hdlr_enter (evt)
 		assert(coroutine.resume(APP))
 	end
 end
+function hdlr_green (evt)
+    if END then return end
+	if evt.class ~= 'key'   then return end
+	if evt.type  ~= 'press' then return end
+	if evt.key == 'GREEN' then
+		print("GREEN pressed")
+		assert(coroutine.resume(APP))
+	end
+end
 
 function sleep(n)
     os.execute("sleep " .. tonumber(n))
@@ -58,6 +67,7 @@ function fq1_1 (evt)
     	value    = value_f1,
 	}
 	print("Sent f1_1")
+	print(os.date("Time %X"))
 end
 function fq1_0 (evt)
 	value_f1 = 0
@@ -234,10 +244,12 @@ end
 
 APP = coroutine.create(
 function()   
-	event.register(hdlr_enter)
+	event.register(hdlr_green)
 	coroutine.yield()      -- espera o ENTER
 
 	while 1<2 do
+		event.timer(2000,resume)
+		coroutine.yield()
 		for i=1, #INPUT,1 do
 			bin(INPUT[i])
 			for t=1,size,1 do
@@ -306,6 +318,8 @@ function()
 			print("Done number: "..i)
 		end
 		print("Loop")
+		event.timer(2000,resume)
+		coroutine.yield()
 	end
 
     -- coroutine.yield()      -- espera o ENTER
