@@ -351,11 +351,12 @@ int
 main ()
 {
   GstSigGen player1, player2, player3, player4, player5, player6, player7,
-      player8, player9, player10, player11, player12, player13;
+      player8, player9, player10, player11, player12, player13, player14, player15;
 
   int const size = 16;
   int i;
   int * transmission;
+  bool flagSync = false;
   // string strTransmission;
 
   int number[size];
@@ -363,6 +364,14 @@ main ()
   player13.setFreq ("19500");
   player13.setVolume ("0.5");
   player13.start ();
+
+  player14.setFreq ("19700");
+  player14.setVolume ("0.3");
+  player14.start ();
+
+  player15.setFreq ("19850");
+  player15.setVolume ("0.1");
+  player15.start ();
 
   player1.setFreq ("20000");
   player1.setVolume ("0.3");
@@ -427,6 +436,21 @@ main ()
       // = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4095 }; //
       // highest number should be 2^13-1 = 4095
 
+      if(!flagSync){
+        for (int i = 0; i < 3; i++)
+        {
+          if(i != 1){
+            player13.setVolume ("0.5");
+          }
+          else{
+            player13.setVolume ("0.1");
+          }
+          std::this_thread::sleep_for (std::chrono::milliseconds (150));
+
+        }
+        // flagSync = true;
+      }
+
       for (int t = 0; t < size; t++)
         {
           number[t] = 0;
@@ -465,7 +489,7 @@ main ()
               printf ("%d", number[t]);
             }
 
-          printf ("\n");
+          printf ("\n\n");
 
           if (number[0])
             player1.setVolume ("1");

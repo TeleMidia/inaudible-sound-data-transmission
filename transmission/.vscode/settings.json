@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.ncl": "xml",
         "string": "cpp",
         "chrono": "cpp",
         "array": "cpp",
@@ -31,6 +32,16 @@
         "system_error": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "cstdarg": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "fstream": "cpp",
+        "sstream": "cpp",
+        "cmath": "cpp",
+        "cstddef": "cpp",
+        "list": "cpp",
+        "numeric": "cpp",
+        "cinttypes": "cpp"
     }
 }

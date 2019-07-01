@@ -1,4 +1,4 @@
-package ca.uol.aig.fftpack;
+package com.sample.audio.calculators;
 /**
   * Construct a 1-D complex data sequence.
 */

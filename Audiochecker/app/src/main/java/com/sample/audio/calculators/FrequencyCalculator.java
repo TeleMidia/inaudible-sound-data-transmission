@@ -47,9 +47,17 @@ public class FrequencyCalculator {
     static private int prog_min = 0;                                            // Current minute of the show
     static private TextView textMinute;                                         // Object to hold id for the minute text field
     static private ImageView imageApp;                                          // Object to hold id for the app image
-    static private int silence_quant = 0;                                       // Quantity of continuos silences detected
+    static private int silence_quant = 0;                                       // Quantity of continuous silences detected
     static private boolean silence_time = false;                                // If it is during silence or not
     Double[][] matrix = null;
+    static private int syncValue = 0;                                           // If < 3 the app is not synced with the transmission
+    static private boolean syncStance = false;                                  // If ref freq has a low (false) or high (true) amplitude
+    private ComplexDoubleFFT spectrumComplexFFT;                                // Object for Complex FFT transform
+    private double[] spectrumAmpInTmp2;                                         // Bin for double values to be stored and converted by ComplexDoubleFFT from mic input
+    private double[] spectrumAmpThreshold;                                      // Bin for double values to be stored and converted by ComplexDoubleFFT from mic input and passed by a threshold
+    private double[] wnd2;                                                      // Bartlett window function to be used with spectrumAmpInTmp2
+    private double fftThreshold = 0.0;                                          // Value for phase threshold usage
+
 
     private int fftLen;
     private int spectrumAmpPt;
@@ -65,15 +73,22 @@ public class FrequencyCalculator {
         spectrumAmpOutDB = new double[fftlen];
         spectrumAmpIn = new double[fftlen];
         spectrumAmpInTmp = new double[fftlen];
+        spectrumAmpInTmp2 = new double[fftlen];
+        spectrumAmpThreshold = new double[fftlen];
         spectrumAmpFFT = new RealDoubleFFT(fftlen);
+        spectrumComplexFFT = new ComplexDoubleFFT(fftlen/2);
         spectrumAmpOutArray = new double[(int) Math.ceil((double) 1 / fftlen)][];
 
         for (int i = 0; i < spectrumAmpOutArray.length; i++) {
             spectrumAmpOutArray[i] = new double[fftlen];
         }
         wnd = new double[fftlen];
+        wnd2 = new double[2*fftlen];
         for (int i = 0; i < wnd.length; i++) {
             wnd[i] = Math.asin(Math.sin(Math.PI * i / wnd.length)) / Math.PI * 2;
+        }
+        for (int i = 0; i < wnd2.length; i++) {
+            wnd2[i] = Math.asin(Math.sin(Math.PI * i / wnd.length)) / Math.PI * 2;
         }
     }
 
@@ -104,9 +119,17 @@ public class FrequencyCalculator {
                 for (int i = 0; i < fftLen; i++) {
                     spectrumAmpInTmp[i] = spectrumAmpIn[i] * wnd[i];
                 }
+//                for (int i = 0; i < fftLen; i++) {
+////                    spectrumAmpInTmp2[i] = spectrumAmpIn[i];
+//                    spectrumAmpInTmp2[i] = spectrumAmpIn[i] * wnd2[i];
+////                    System.out.println("FFT: " + Integer.toString(i) + " " + Double.toString(spectrumAmpInTmp2[i]));
+////                    System.out.flush();
+//                }
+//                spectrumComplexFFT.ft(spectrumAmpInTmp2);
                 spectrumAmpFFT.ft(spectrumAmpInTmp);
                 fftToAmp(spectrumAmpOutTmp, spectrumAmpInTmp);
                 System.arraycopy(spectrumAmpOutTmp, 0, spectrumAmpOutArray[spectrumAmpOutArrayPt], 0, spectrumAmpOutTmp.length);
+                System.arraycopy(spectrumAmpInTmp2, 0, spectrumAmpThreshold, 0, spectrumAmpInTmp2.length);
                 spectrumAmpOutArrayPt = (spectrumAmpOutArrayPt + 1) % spectrumAmpOutArray.length;
                 for (int i = 0; i < fftLen; i++) {
                     spectrumAmpOutCum[i] += spectrumAmpOutTmp[i];
@@ -155,6 +178,7 @@ public class FrequencyCalculator {
         int silence_tmp = 0;                                    // Temporary variable for counting silences
         Double checkMatrix[][] = new Double[size_current][1];   // Matrix for the received values after being checked
         int sumCheckMatrix = 0;                                 // Sum for the checkMatrix index
+        double phases[] = new double[fftLen];                   // Place to store current phases of each frequency bin
 
 //        matrix = Hamming_Code_Gen.generateMatrix("11000000000");
 //
@@ -189,6 +213,35 @@ public class FrequencyCalculator {
                 maxAmpFreq = i;
             }
         }
+
+
+//        for (int i = 0; i < fftLen; i++){
+//            if (fftThreshold < Math.abs(spectrumAmpThreshold[i]))
+//                fftThreshold = Math.abs(spectrumAmpThreshold[i]);
+//        }
+//        for (int i = 0; i < fftLen; i++){
+//            if (Math.abs(spectrumAmpThreshold[i]) < fftThreshold/100){
+//                spectrumAmpThreshold[i] = 0.0;
+//            }
+//        }
+//
+//        phases[0] =  Math.atan2(0,spectrumAmpThreshold[0])*180/Math.PI;
+//        for (int i = 2; i < fftLen; i+=2){
+//            phases[i/2] = Math.atan2(spectrumAmpThreshold[i+1],spectrumAmpThreshold[i])*180/Math.PI;
+//            System.out.println("Phase "+(i/2)+" "+(phases[i/2])+ " "+(spectrumAmpThreshold[i+1])+ " "+(spectrumAmpThreshold[i]));
+//            System.out.flush();
+//        }
+//
+        if (syncStance && (spectrumAmpOutDB[113] < -40) && (syncValue == 1)){
+            syncStance = false;
+            syncValue++;
+        }
+        else if (!syncStance && (spectrumAmpOutDB[113] > -40)){
+            syncStance = true;
+            syncValue++;
+        }
+
+        System.out.println("Sync Value: "+Integer.toString(syncValue));
 
         if (spectrumAmpOutDB[113] > -60) {
             if (spectrumAmpOutDB[116] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[116] > -50)
@@ -293,6 +346,23 @@ public class FrequencyCalculator {
                     maxAmpFreq += xPeak * sampleRate / fftLen;
                 }
             }
+        }
+
+        if ((currentTimeMillis()-lastEmpty)>5000 && !flag_runs_printed){
+
+            double percent = 0;
+            double allbits = allruns*dataToRecieve.length;
+            for (double k :  corrects){
+                percent += k;
+            }
+            System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f] - number of runs : %d - percentage: %.4f \n", corrects[0]/(allruns),corrects[1]/(allruns),corrects[2]/(allruns),corrects[3]/(allruns),corrects[4]/(allruns),corrects[5]/(allruns),allruns,percent/(allruns*6));
+            System.out.printf("All bits : [%.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f] - number of bits : %.0f\n", receptivity_bit[0]/(allbits),receptivity_bit[1]/(allbits),receptivity_bit[2]/(allbits),receptivity_bit[3]/(allbits),receptivity_bit[4]/(allbits),receptivity_bit[5]/(allbits),receptivity_bit[6]/(allbits),receptivity_bit[7]/(allbits),receptivity_bit[8]/(allbits),receptivity_bit[9]/(allbits),receptivity_bit[10]/(allbits),receptivity_bit[11]/(allbits),allbits);
+
+            flag_runs_printed = true;
+        }
+
+        if (syncValue < 3){
+            return maxAmpFreq;
         }
 
 //        if (invalid_freq){
@@ -487,6 +557,8 @@ public class FrequencyCalculator {
 //                System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f]\n", corrects[0]/allruns,corrects[1]/allruns,corrects[2]/allruns,corrects[3]/allruns,corrects[4]/allruns,corrects[5]/allruns);
                 System.out.flush();
                 allruns++;
+                syncValue = 0;
+                syncStance = false;
             }
         }
 
@@ -504,18 +576,7 @@ public class FrequencyCalculator {
 
 //        silence_time = false;
 
-        if ((currentTimeMillis()-lastEmpty)>5000 && !flag_runs_printed){
 
-            double percent = 0;
-            double allbits = allruns*dataToRecieve.length;
-            for (double k :  corrects){
-                percent += k;
-            }
-            System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f] - number of runs : %d - percentage: %.4f \n", corrects[0]/(allruns),corrects[1]/(allruns),corrects[2]/(allruns),corrects[3]/(allruns),corrects[4]/(allruns),corrects[5]/(allruns),allruns,percent/(allruns*6));
-            System.out.printf("All bits : [%.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f] - number of bits : %.0f\n", receptivity_bit[0]/(allbits),receptivity_bit[1]/(allbits),receptivity_bit[2]/(allbits),receptivity_bit[3]/(allbits),receptivity_bit[4]/(allbits),receptivity_bit[5]/(allbits),receptivity_bit[6]/(allbits),receptivity_bit[7]/(allbits),receptivity_bit[8]/(allbits),receptivity_bit[9]/(allbits),receptivity_bit[10]/(allbits),receptivity_bit[11]/(allbits),allbits);
-
-            flag_runs_printed = true;
-        }
 
         return maxAmpFreq;
     }
