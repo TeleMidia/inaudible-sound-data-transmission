@@ -1,0 +1,25 @@
+#N canvas 67 112 600 278 10;
+#X obj 74 38 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X floatatom 74 90 5 0 0 0 - - -, f 5;
+#X text 262 41 - counter;
+#X obj 206 259 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X msg 206 78 What it does;
+#X msg 206 158 Inlet;
+#X msg 206 217 Outlet;
+#X text 223 239 Output the last internal number of Counter;
+#X text 223 105 Counter is a simple counter that sends its internal
+number and increments itself afterwards. It can be initialized the
+internal counter to be different from 0;
+#X obj 207 41 counter;
+#X msg 118 37 reset;
+#X obj 74 66 counter 3;
+#X text 223 180 Bang: fires up a bang;
+#X text 223 194 Reset: resets the counter to its initial value;
+#X connect 0 0 11 0;
+#X connect 4 0 5 0;
+#X connect 5 0 6 0;
+#X connect 6 0 3 0;
+#X connect 10 0 11 0;
+#X connect 11 0 1 0;

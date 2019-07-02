@@ -1,0 +1,3 @@
+transmission: transmission/
+reception: Audiochecker/
+features: multiple frenquencies now on Gstreamer standalone pipeline

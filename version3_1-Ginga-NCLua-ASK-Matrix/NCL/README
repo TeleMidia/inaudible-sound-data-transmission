@@ -1,0 +1,5 @@
+Esta pasta contém uma transmissões que utilizam NCL e LUA
+
+1. BgMain.ncl
+Esta aplicação foi feita segundo os moldes da versão do Rock in Rio com poucas alterações. Para transmitir aperte o botão vermelho. Em conjunto há uma pasta para a compilação do aplicativo Android.
+Nesta versão específica é tocado um vídeo do filme Matrix e em um determinado momento a aplicação ativa uma mudança de estado no dispositivo móvel (a tela fica amaela e um óculos aparece).

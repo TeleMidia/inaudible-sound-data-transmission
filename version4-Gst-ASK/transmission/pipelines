@@ -1,0 +1,13 @@
+gst-launch-1.0 audiotestsrc freq=20000 ! audiomixer name=mix ! audioconvert ! audioresample ! autoaudiosink audiotestsrc freq=20150 timestamp-offset=25 ! mix. audiotestsrc freq=20300 timestamp-offset=50 ! mix. audiotestsrc freq=20450 timestamp-offset=75 ! mix. audiotestsrc freq=20600 timestamp-offset=100 ! mix. audiotestsrc freq=20750 timestamp-offset=125 ! mix. audiotestsrc freq=20900 timestamp-offset=150 ! mix.
+
+gst-launch-1.0 audiomixer name=mix mix. ! audioconvert ! audioresample ! autoaudiosink audiotestsrc num-buffers=400 volume=0.2 ! mix. audiotestsrc num-buffers=300 volume=0.2 freq=880 timestamp-offset=1000000000 ! mix. audiotestsrc num-buffers=100 volume=0.2 freq=660 timestamp-offset=2000000000 ! mix.
+
+gst-launch-1.0 audiomixer name=mix mix. ! audioconvert ! audioresample ! autoaudiosink audiotestsrc volume=0.2 ! mix. audiotestsrc volume=0.2 freq=880 timestamp-offset=1000000000 ! mix. audiotestsrc volume=0.2 freq=660 timestamp-offset=2000000000 ! mix.
+
+gst-launch-1.0 audiomixer name=mix ! audioconvert ! audioresample ! autoaudiosink audiotestsrc freq=20150 timestamp-offset=25 ! mix. audiotestsrc freq=20300 timestamp-offset=50 ! mix. audiotestsrc freq=20450 timestamp-offset=75 ! mix. audiotestsrc freq=20600 timestamp-offset=100 ! mix. audiotestsrc freq=20750 timestamp-offset=125 ! mix. audiotestsrc freq=20900 timestamp-offset=150 ! mix.
+
+gst-launch-1.0 audiomixer name=mix ! audioconvert ! audioresample ! autoaudiosink audiotestsrc freq=20150 ! mix. audiotestsrc freq=20300 ! mix. audiotestsrc freq=20450 ! mix. audiotestsrc freq=20600 ! mix. audiotestsrc freq=20750 ! mix. audiotestsrc freq=20900 ! mix.
+
+gst-launch-1.0 audiomixer name=mix ! audioconvert ! audioresample ! autoaudiosink audiotestsrc freq=20150 timestamp-offset=10000000000 ! mix. audiotestsrc freq=20300 timestamp-offset=5000000000 ! mix.
+
+gst-launch-1.0 audiotestsrc freq=20000 ! audiomixer name=mix ! audioconvert ! audioresample ! autoaudiosink audiotestsrc freq=20150 wave=cosine timestamp-offset=25 ! mix. audiotestsrc freq=20300 timestamp-offset=25 ! mix. audiotestsrc freq=20450 timestamp-offset=25 ! mix. audiotestsrc freq=20600 timestamp-offset=25 ! mix.

@@ -1,0 +1,5 @@
+transmission: NCL/
+reception: BgChange-Matrix/
+features: unique inaudible frenquency being played on a NCL application
+          that triggers a single event on a mobile device when Morpheus
+	  is seen closely

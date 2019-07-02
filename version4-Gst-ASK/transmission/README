@@ -1,0 +1,14 @@
+1.gst-transmission
+Gera em tempo real as faixas de áudio e transmite segundo o protocolo
+
+2.gst-transmission-file
+Lê os arquivos de áudio previamente criados e transmite segundo o protocolo
+
+3. Pipelines
+Neste arquivo exitem vários exemplos de comandos que podem ser 
+colocados no terminal para testar se o Gstreamer está configurado corretamente 
+e que exemplificam o que o código de gerador em tempo real fará
+
+4.Makefile
+Gera as versões compiladas dos arquivos gst-transmission 
+e gst-transmission-file, nesta ordem, sendo elas, a.out e b.out

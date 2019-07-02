@@ -1,0 +1,3 @@
+transmission: Pd-Transmission/
+reception: Audiochecker/
+features: Audio player and pipeline created on Puredata
