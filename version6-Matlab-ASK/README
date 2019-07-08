@@ -1,3 +1,3 @@
-transmission: transmission-Matlab/
+transmission: sine_ampTransmission.m
 reception: Audiochecker/
 features: Audio player and pipeline created through Matlab
