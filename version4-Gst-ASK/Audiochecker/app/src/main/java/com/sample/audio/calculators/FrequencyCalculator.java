@@ -570,6 +570,8 @@ public class FrequencyCalculator {
             fq_string = "";
             receptionCount = 0;
             allruns++;
+            syncValue = 0;
+            syncStance = false;
             System.out.println("Silence greater than 2s\n");
             System.out.flush();
         }
