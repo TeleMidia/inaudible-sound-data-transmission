@@ -2,6 +2,7 @@ local APP
 local INPUT = { 1, 17, 33, 49, 65, 81}
 local number = {}
 local size = 8
+local flagSync = false
 
 local END = false
 local value_f1, value_f2, value_f3, value_f4, value_f5, value_f6, value_f7, value_f8
@@ -228,7 +229,7 @@ function fq8_1 (evt)
     	action   = 'start',
     	value    = value_f8,
 	}
-	print("Sent f1_1")
+	print("Sent f8_1")
 end
 function fq8_0 (evt)
 	value_f8 = 0
@@ -242,14 +243,48 @@ function fq8_0 (evt)
 	print("Sent f8_0")
 end
 
+function fq13_1 (evt)
+	value_f13 = 1
+	event.post{
+		class    = 'ncl',
+    	type     = 'attribution',
+    	name     = 'f13',
+    	action   = 'start',
+    	value    = value_f13,
+	}
+	print("Sent f13_1")
+end
+function fq13_0 (evt)
+	value_f13 = 0
+	event.post{
+		class    = 'ncl',
+    	type     = 'attribution',
+    	name     = 'f13',
+    	action   = 'start',
+    	value    = value_f13,
+	}
+	print("Sent f13_0")
+end
+
 APP = coroutine.create(
 function()   
 	event.register(hdlr_green)
 	coroutine.yield()      -- espera o ENTER
 
-	while 1<2 do
-		event.timer(2000,resume)
+	while true do
+		event.timer(1800,resume)
 		coroutine.yield()
+		
+		for i=0, 2, 1 do
+			if(i ~= 1) then
+				fq13_1(event)
+			else
+				fq13_0(event)
+			end
+			event.timer(150,resume)
+			coroutine.yield()	
+		end
+
 		for i=1, #INPUT,1 do
 			bin(INPUT[i])
 			for t=1,size,1 do
@@ -310,15 +345,15 @@ function()
 					end
 				end
 			end
-			event.timer(100,resume)
+			event.timer(150,resume)
 			coroutine.yield()
 			silence(event)
-			event.timer(1800,resume)
+			event.timer(300,resume)
 			coroutine.yield()		
 			print("Done number: "..i)
 		end
 		print("Loop")
-		event.timer(2000,resume)
+		event.timer(1800,resume)
 		coroutine.yield()
 	end
 

@@ -27,7 +27,7 @@ public class FrequencyCalculator {
     // Variables for tests
 
 //    static protected short dataToRecieve[] =  { 7, 7, 7, 7, 7, 7 };
-    static private short dataToRecieve[] =  { 1, 7, 5, 4, 19, 1 };
+    static private short dataToRecieve[] =  { 1, 17, 33, 49, 65, 81};
     static private int size = 16;                                          // Size of the possible number to be received
     static private int dataExpected[] = new int[size];                     // A value of dataToReceive but in bits
     static private int receptionCount = 0;                                 // Number of dataToReceive values already analyzed
@@ -36,6 +36,8 @@ public class FrequencyCalculator {
     static private long lastEmpty = currentTimeMillis();                   // Last time empty equals true
     static private double corrects[] = new double[dataToRecieve.length];   // Sum of all past values from receptivity
     static private int allruns = 1;                                        // All runs from receptivity
+    static private int syncValue = 0;                                      // If < 3 the app is not synced with the transmission
+    static private boolean syncStance = false;                             // If ref freq has a low (false) or high (true) amplitude
 
     private int fftLen;
     private int spectrumAmpPt;
@@ -160,6 +162,17 @@ public class FrequencyCalculator {
             }
         }
 
+        if (syncStance && (spectrumAmpOutDB[113] < -40) && (syncValue == 1)){
+            syncStance = false;
+            syncValue++;
+        }
+        else if (!syncStance && (spectrumAmpOutDB[113] > -40)){
+            syncStance = true;
+            syncValue++;
+        }
+
+        System.out.println("Sync Value: "+Integer.toString(syncValue));
+
         if (spectrumAmpOutDB[113] > -60) {
             if (spectrumAmpOutDB[116] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[116] > -50)
                 fq[0] = true;
@@ -265,6 +278,23 @@ public class FrequencyCalculator {
             }
         }
 
+        if ((currentTimeMillis()-lastEmpty)>5000 && !flag_runs_printed){
+
+            double percent = 0;
+            double allbits = allruns*dataToRecieve.length;
+            for (double k :  corrects){
+                percent += k;
+            }
+            System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f] - number of runs : %d - percentage: %.4f \n", corrects[0]/(allruns),corrects[1]/(allruns),corrects[2]/(allruns),corrects[3]/(allruns),corrects[4]/(allruns),corrects[5]/(allruns),allruns,percent/(allruns*6));
+            System.out.printf("All bits : [%.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f] - number of bits : %.0f\n", receptivity_bit[0]/(allbits),receptivity_bit[1]/(allbits),receptivity_bit[2]/(allbits),receptivity_bit[3]/(allbits),receptivity_bit[4]/(allbits),receptivity_bit[5]/(allbits),receptivity_bit[6]/(allbits),receptivity_bit[7]/(allbits),receptivity_bit[8]/(allbits),receptivity_bit[9]/(allbits),receptivity_bit[10]/(allbits),receptivity_bit[11]/(allbits),allbits);
+
+            flag_runs_printed = true;
+        }
+
+        if (syncValue < 3){
+            return maxAmpFreq;
+        }
+
         if (invalid_freq){
 //            System.out.printf("An invalid frequency was found in %s !\n",invalid_freq_string);
             return maxAmpFreq;
@@ -290,7 +320,7 @@ public class FrequencyCalculator {
 
         num++;
 
-        if (!flag && flag_new_byte && (currentTimeMillis()-lastEmpty)>100){      // If a bit wasn't found on this run, the array is not empty and 1 sec has been passed since the byte started to be analyzed
+        if (!flag && flag_new_byte && (currentTimeMillis()-lastEmpty)>300){      // If a bit wasn't found on this run, the array is not empty and 1 sec has been passed since the byte started to be analyzed
 //            System.out.println("Empty T: "+ Long.toString(currentTimeMillis()-lastEmpty));
             System.out.flush();
             if (receptionCount == 0) {                                            // If a new set of bytes is being analyzed
@@ -341,6 +371,8 @@ public class FrequencyCalculator {
 //                System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f]\n", corrects[0]/allruns,corrects[1]/allruns,corrects[2]/allruns,corrects[3]/allruns,corrects[4]/allruns,corrects[5]/allruns);
                 System.out.flush();
                 allruns++;
+                syncValue = 0;
+                syncStance = false;
             }
         }
 
@@ -352,21 +384,10 @@ public class FrequencyCalculator {
             fq_string = "";
             receptionCount = 0;
             allruns++;
+            syncValue = 0;
+            syncStance = false;
             System.out.println("Silence greater than 2s\n");
             System.out.flush();
-        }
-
-        if ((currentTimeMillis()-lastEmpty)>5000 && !flag_runs_printed){
-
-            double percent = 0;
-            double allbits = allruns*dataToRecieve.length;
-            for (double k :  corrects){
-                percent += k;
-            }
-            System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f] - number of runs : %d - percentage: %.4f \n", corrects[0]/(allruns),corrects[1]/(allruns),corrects[2]/(allruns),corrects[3]/(allruns),corrects[4]/(allruns),corrects[5]/(allruns),allruns,percent/(allruns*6));
-            System.out.printf("All bits : [%.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f, %.4f] - number of bits : %.0f\n", receptivity_bit[0]/(allbits),receptivity_bit[1]/(allbits),receptivity_bit[2]/(allbits),receptivity_bit[3]/(allbits),receptivity_bit[4]/(allbits),receptivity_bit[5]/(allbits),receptivity_bit[6]/(allbits),receptivity_bit[7]/(allbits),receptivity_bit[8]/(allbits),receptivity_bit[9]/(allbits),receptivity_bit[10]/(allbits),receptivity_bit[11]/(allbits),allbits);
-
-            flag_runs_printed = true;
         }
 
         return maxAmpFreq;

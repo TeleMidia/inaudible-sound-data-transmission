@@ -58,7 +58,7 @@
 
 	<media id="audio13" type="application/x-ginga-siggen">
         <property name="freq" value="19500"/>
-		<property name="volume" value="0.7"/>
+		<property name="volume" value="0.5"/>
 	</media>
 	<media id="audio1" type="application/x-ginga-siggen">
         <property name="freq" value="20000"/>
@@ -102,6 +102,7 @@
 		<property name="f6" value="0"/>
 		<property name="f7" value="0"/>
 		<property name="f8" value="0"/>
+		<property name="f13" value="1"/>
 	</media>
 
     <media id="image" src="app_img.png" descriptor="screenDesc"/>	
@@ -281,6 +282,25 @@
       	</bind>  
 		<bind role="set" component="audio8" interface="volume">
        		<bindParam name="var" value="0.3"/>
+      	</bind>
+	</link>
+
+	<link xconnector="onCondEqBeginTestSet">
+		<bind role="onEndAttribution" component="lua" interface="f13"/>
+		<bind role="test" component="lua" interface="f13">
+			<bindParam name="varValue" value="1"/>
+      	</bind>  
+		<bind role="set" component="audio13" interface="volume">
+       		<bindParam name="var" value="0.5"/>
+      	</bind>
+	</link>
+	<link xconnector="onCondEqBeginTestSet">
+		<bind role="onEndAttribution" component="lua" interface="f13"/>
+		<bind role="test" component="lua" interface="f13">
+			<bindParam name="varValue" value="0"/>
+      	</bind>  
+		<bind role="set" component="audio13" interface="volume">
+       		<bindParam name="var" value="0.1"/>
       	</bind>
 	</link>
 
