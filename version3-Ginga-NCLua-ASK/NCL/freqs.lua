@@ -1,7 +1,7 @@
 local APP
 local INPUT = { 1, 17, 33, 49, 65, 81}
 local number = {}
-local size = 8
+local size = 16
 local flagSync = false
 
 local END = false
@@ -266,6 +266,83 @@ function fq13_0 (evt)
 	print("Sent f13_0")
 end
 
+function generateHamming(msg) -- Generates a Hamming code according to the number of data bits
+	r = 0
+	m = string.len(msg)
+	-- calculate number of parity bits needed using m+r+1<=2^r
+	while true do
+		if (m + r <= math.pow (2, r)) then
+          break
+		end
+	  r = r + 1
+	end
+
+	transLength = string.len(msg) + r
+	temp = 0
+	temp2 = 0
+	j = 1
+
+	transMsg = {}
+	transMsg[transLength + 1] = 0
+
+	for i = 1, transLength, 1 do
+      temp2 = math.pow (2, temp);
+	  if (i % temp2 ~= 0) then
+		-- print("i "..i.." temp2 "..temp2.." i % temp2 "..(i % temp2))
+		transMsg[i] = tonumber (string.sub(msg,j,j))
+		j = j + 1
+      else
+		temp = temp + 1
+	  end
+	end
+
+	for k=1, transLength+1, 1 do 
+		if transMsg[k] == nil then
+			transMsg[k] = 0
+		end
+	end
+	
+	for i = 0, r-1, 1 do
+      smallStep = math.pow (2, i)
+      bigStep = smallStep * 2
+	  start = smallStep
+	  checkPos = start
+
+	  while (true) do -- Not sure if this section of code is correct
+        	for k = start, start + smallStep-1, 1 do
+            	checkPos = k
+            	if (k > transLength) then
+            		break
+				end
+        		transMsg[smallStep] = bit32.band((transMsg[smallStep]), (transMsg[checkPos]))
+			end
+			
+        	if (checkPos > transLength) then
+          		break
+        	else
+				start = start + bigStep;
+			end
+		  
+        end
+	end
+	
+	txt = ""
+	for i = 1,transLength, 1 do
+		txt = txt .. tonumber(transMsg[i])
+	end
+	print ("Hamming Encoded Message : " .. txt)
+
+	return transMsg
+end
+
+function hammingBinToI (arr)
+	sum = 0
+	for i=1, 16,1 do
+		sum = sum + math.pow(2,i) * arr[i] 
+	end
+	return sum
+end
+
 APP = coroutine.create(
 function()   
 	event.register(hdlr_green)
@@ -287,6 +364,21 @@ function()
 
 		for i=1, #INPUT,1 do
 			bin(INPUT[i])
+
+			strTransmission = ""
+			for k=1, size, 1 do
+				if (not(number[k] == 0 and string.len(strTransmission) == 0)) then
+					strTransmission = strTransmission..tostring(number[k])
+				end
+			end
+
+			transmission = generateHamming(string.sub(strTransmission,1,12))  -- Not sure if this function gives the correct result
+			hammingVal = hammingBinToI(transmission)
+			bin(hammingVal)
+			print("Hamming value: " .. hammingVal.."\n")
+			-- for k, v in pairs(number) do print(k, v) end
+
+
 			for t=1,size,1 do
 				if t == 1 then
 					if number[t] == 1 then
