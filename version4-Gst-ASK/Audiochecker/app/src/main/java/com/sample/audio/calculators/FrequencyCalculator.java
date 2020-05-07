@@ -1,5 +1,6 @@
 package com.sample.audio.calculators;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -56,6 +57,7 @@ public class FrequencyCalculator {
     private double[] spectrumAmpInTmp2;                                         // Bin for double values to be stored and converted by ComplexDoubleFFT from mic input
     private double[] spectrumAmpThreshold;                                      // Bin for double values to be stored and converted by ComplexDoubleFFT from mic input and passed by a threshold
     private double[] wnd2;                                                      // Bartlett window function to be used with spectrumAmpInTmp2
+    private double[] cosMod;                                                    // A cosine value to be multiplied with the spectrumAmpInTmp2
     private double fftThreshold = 0.0;                                          // Value for phase threshold usage
 
 
@@ -79,17 +81,37 @@ public class FrequencyCalculator {
         spectrumComplexFFT = new ComplexDoubleFFT(fftlen/2);
         spectrumAmpOutArray = new double[(int) Math.ceil((double) 1 / fftlen)][];
 
-        for (int i = 0; i < spectrumAmpOutArray.length; i++) {
+        double freqS[] = new double[size_current];
+        int i = 0;
+        cosMod = new double[fftlen];
+
+//        while (i < size_current ){
+//            freqS[i] = 19500 + 150 * i;
+//            i++;
+//        }
+
+        double time[] = new double[fftlen];
+        for (i = 0;  i < fftlen ; i++) {
+            time[i] = 1.0/22050 * i;
+        }
+
+        for (i = 0; i < spectrumAmpOutArray.length; i++) {
             spectrumAmpOutArray[i] = new double[fftlen];
         }
         wnd = new double[fftlen];
         wnd2 = new double[2*fftlen];
-        for (int i = 0; i < wnd.length; i++) {
+        for (i = 0; i < wnd.length; i++) {
             wnd[i] = Math.asin(Math.sin(Math.PI * i / wnd.length)) / Math.PI * 2;
         }
-        for (int i = 0; i < wnd2.length; i++) {
+        for (i = 0; i < wnd2.length; i++) {
             wnd2[i] = Math.asin(Math.sin(Math.PI * i / wnd.length)) / Math.PI * 2;
         }
+
+
+            for (i = 0; i < cosMod.length; i++) {
+                cosMod[i] = Math.cos(2 * Math.PI * 18500 * time[i]);
+            }
+
     }
 
     public FrequencyCalculator(int fftlen) { init(fftlen); }
@@ -117,7 +139,8 @@ public class FrequencyCalculator {
             }
             if (spectrumAmpPt == fftLen) {
                 for (int i = 0; i < fftLen; i++) {
-                    spectrumAmpInTmp[i] = spectrumAmpIn[i] * wnd[i];
+                    spectrumAmpInTmp[i] = spectrumAmpIn[i] * wnd[i] * cosMod[i];
+                    Log.d("@@@", "index "+ i + " - Value: "+spectrumAmpInTmp[i]);
                 }
 //                for (int i = 0; i < fftLen; i++) {
 ////                    spectrumAmpInTmp2[i] = spectrumAmpIn[i];

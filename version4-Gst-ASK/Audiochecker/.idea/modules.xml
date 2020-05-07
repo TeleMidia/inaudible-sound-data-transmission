@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Audiochecker.iml" filepath="$PROJECT_DIR$/Audiochecker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Audiochecker.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Audiochecker.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/version4-Gst-ASK.Audiochecker.iml" filepath="$PROJECT_DIR$/.idea/modules/version4-Gst-ASK.Audiochecker.iml" />
     </modules>
   </component>
 </project>
