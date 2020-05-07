@@ -21,7 +21,7 @@ modulation and the bit rate is 17 bps.
 
 ## paper
 
-An paper was published in WTIC workshop at WebMedia 2016
+An paper was published in WTIC workshop at WebMedia 2018
 
 - [paper file](https://portaldeconteudo.sbc.org.br/index.php/webmedia_estendido/article/download/4059/3999)
 
