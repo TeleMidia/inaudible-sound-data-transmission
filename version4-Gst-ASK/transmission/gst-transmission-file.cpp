@@ -238,66 +238,80 @@ bin (unsigned short v, int number[], int size)
 int
 main ()
 {
-  GstFileSigGen player1 = GstFileSigGen ((char *) "Audio Track_-01.wav"),
-                player2 = GstFileSigGen ((char *) "Audio Track_-02.wav"),
-                player3 = GstFileSigGen ((char *) "Audio Track_-03.wav"),
-                player4 = GstFileSigGen ((char *) "Audio Track_-04.wav"),
-                player5 = GstFileSigGen ((char *) "Audio Track_-05.wav"),
-                player6 = GstFileSigGen ((char *) "Audio Track_-06.wav"),
-                player7 = GstFileSigGen ((char *) "Audio Track_-07.wav"),
-                player8 = GstFileSigGen ((char *) "Audio Track_-08.wav"),
-                player9 = GstFileSigGen ((char *) "Audio Track_-09.wav"),
-                player10 = GstFileSigGen ((char *) "Audio Track_-10.wav"),
-                player11 = GstFileSigGen ((char *) "Audio Track_-11.wav"),
-                player12 = GstFileSigGen ((char *) "Audio Track_-12.wav"),
-                player13 = GstFileSigGen ((char *) "Audio Track_-13.wav");
+  // GstFileSigGen player1 = GstFileSigGen ((char *) "Audio Track_-01.wav"),
+  //               player2 = GstFileSigGen ((char *) "Audio Track_-02.wav"),
+  //               player3 = GstFileSigGen ((char *) "Audio Track_-03.wav"),
+  //               player4 = GstFileSigGen ((char *) "Audio Track_-04.wav"),
+  //               player5 = GstFileSigGen ((char *) "Audio Track_-05.wav"),
+  //               player6 = GstFileSigGen ((char *) "Audio Track_-06.wav"),
+  //               player7 = GstFileSigGen ((char *) "Audio Track_-07.wav"),
+  //               player8 = GstFileSigGen ((char *) "Audio Track_-08.wav"),
+  //               player9 = GstFileSigGen ((char *) "Audio Track_-09.wav"),
+  //               player10 = GstFileSigGen ((char *) "Audio Track_-10.wav"),
+  //               player11 = GstFileSigGen ((char *) "Audio Track_-11.wav"),
+  //               player12 = GstFileSigGen ((char *) "Audio Track_-12.wav"),
+  //               player13 = GstFileSigGen ((char *) "Audio Track_-13.wav");
+
+  GstFileSigGen player1 = GstFileSigGen ((char *) "19500Hz.wav"),
+                player2 = GstFileSigGen ((char *) "19700Hz.wav"),
+                player3 = GstFileSigGen ((char *) "19900Hz.wav"),
+                player4 = GstFileSigGen ((char *) "20100Hz.wav"),
+                player5 = GstFileSigGen ((char *) "20300Hz.wav"),
+                player6 = GstFileSigGen ((char *) "20500Hz.wav"),
+                player7 = GstFileSigGen ((char *) "20700Hz.wav"),
+                player8 = GstFileSigGen ((char *) "20900Hz.wav");
+                // player9 = GstFileSigGen ((char *) "Hz.wav"),
+                // player10 = GstFileSigGen ((char *) "Hz.wav"),
+                // player11 = GstFileSigGen ((char *) "Hz.wav"),
+                // player12 = GstFileSigGen ((char *) "Hz.wav"),
+                // player13 = GstFileSigGen ((char *) "Hz.wav");
 
   int const size = 16;
 
   int number[size];
 
-  player13.setVolume ("0.5");
-  player13.start ();
+  // player13.setVolume ("0.5");
+  // player13.start ();
 
-  player1.setVolume ("0.3");
+  player1.setVolume ("0");
   player1.start ();
 
-  player2.setVolume ("0.3");
+  player2.setVolume ("0");
   player2.start ();
 
-  player3.setVolume ("0.3");
+  player3.setVolume ("0");
   player3.start ();
 
-  player4.setVolume ("0.3");
+  player4.setVolume ("0");
   player4.start ();
 
-  player5.setVolume ("0.3");
+  player5.setVolume ("0");
   player5.start ();
 
-  player6.setVolume ("0.3");
+  player6.setVolume ("0");
   player6.start ();
 
-  player7.setVolume ("0.3");
+  player7.setVolume ("0");
   player7.start ();
 
-  player8.setVolume ("0.3");
+  player8.setVolume ("0");
   player8.start ();
 
-  player9.setVolume ("0.3");
-  player9.start ();
+  // player9.setVolume ("0.3");
+  // player9.start ();
 
-  player10.setVolume ("0.3");
-  player10.start ();
+  // player10.setVolume ("0.3");
+  // player10.start ();
 
-  player11.setVolume ("0.3");
-  player11.start ();
+  // player11.setVolume ("0.3");
+  // player11.start ();
 
-  player12.setVolume ("0.3");
-  player12.start ();
+  // player12.setVolume ("0.3");
+  // player12.start ();
 
   while (true)
     {
-      std::this_thread::sleep_for (std::chrono::seconds (2));
+      // std::this_thread::sleep_for (std::chrono::seconds (2));
 
       auto start = std::chrono::system_clock::now ();
 
@@ -306,7 +320,8 @@ main ()
           // 8191
           // = { 1, 7, 5, 4, 19, 1 }; // highest number should be 2^13-1 =
           // 8191
-          = { 1, 17, 33, 49, 65, 81 };
+          // = { 1, 17, 33, 49, 65, 81 };
+          = { 73, 146 };
       // = { 1, 1, 1, 1, 1, 1};
 
       // = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4095 }; //
@@ -319,89 +334,89 @@ main ()
 
       for (int i = 0; i < sizeof (dataToSend) / sizeof (dataToSend[0]); i++)
         {
-          printf ("number: %d\n", dataToSend[i]);
+          // printf ("number: %d\n", dataToSend[i]);
           bin (dataToSend[i], number, size);
 
-          for (int t = 0; t < size; t++)
-            {
-              printf ("%d", number[t]);
-            }
+          // for (int t = 0; t < size; t++)
+          //   {
+          //     printf ("%d", number[t]);
+          //   }
 
-          printf ("\n");
+          // printf ("\n");
 
           // player13.setVolume ("0.7");
 
           if (number[0])
             player1.setVolume ("1");
           else
-            player1.setVolume ("0.3");
+            player1.setVolume ("0");
           if (number[1])
             player2.setVolume ("1");
           else
-            player2.setVolume ("0.3");
+            player2.setVolume ("0");
           if (number[2])
             player3.setVolume ("1");
           else
-            player3.setVolume ("0.3");
+            player3.setVolume ("0");
           if (number[3])
             player4.setVolume ("1");
           else
-            player4.setVolume ("0.3");
+            player4.setVolume ("0");
           if (number[4])
             player5.setVolume ("1");
           else
-            player5.setVolume ("0.3");
+            player5.setVolume ("0");
           if (number[5])
             player6.setVolume ("1");
           else
-            player6.setVolume ("0.3");
+            player6.setVolume ("0");
           if (number[6])
             player7.setVolume ("1");
           else
-            player7.setVolume ("0.3");
+            player7.setVolume ("0");
           if (number[7])
             player8.setVolume ("1");
           else
-            player8.setVolume ("0.3");
-          if (number[8])
-            player9.setVolume ("1");
-          else
-            player9.setVolume ("0.3");
-          if (number[9])
-            player10.setVolume ("1");
-          else
-            player10.setVolume ("0.3");
-          if (number[10])
-            player11.setVolume ("1");
-          else
-            player11.setVolume ("0.3");
-          if (number[11])
-            player12.setVolume ("1");
-          else
-            player12.setVolume ("0.3");
+            player8.setVolume ("0");
+          // if (number[8])
+          //   player9.setVolume ("1");
+          // else
+          //   player9.setVolume ("0.3");
+          // if (number[9])
+          //   player10.setVolume ("1");
+          // else
+          //   player10.setVolume ("0.3");
+          // if (number[10])
+          //   player11.setVolume ("1");
+          // else
+          //   player11.setVolume ("0.3");
+          // if (number[11])
+          //   player12.setVolume ("1");
+          // else
+          //   player12.setVolume ("0.3");
 
-          std::this_thread::sleep_for (std::chrono::milliseconds (100));
+          std::this_thread::sleep_for (std::chrono::milliseconds (47));
 
           for (int t = 0; t < size; t++)
             {
               number[t] = 0;
             }
 
-          player1.setVolume ("0.3");
-          player2.setVolume ("0.3");
-          player3.setVolume ("0.3");
-          player4.setVolume ("0.3");
-          player5.setVolume ("0.3");
-          player6.setVolume ("0.3");
-          player7.setVolume ("0.3");
-          player8.setVolume ("0.3");
-          player9.setVolume ("0.3");
-          player10.setVolume ("0.3");
-          player11.setVolume ("0.3");
-          player12.setVolume ("0.3");
+          // player1.setVolume ("0");
+          // player2.setVolume ("0");
+          // player3.setVolume ("0");
+          // player4.setVolume ("0");
+          // player5.setVolume ("0");
+          // player6.setVolume ("0");
+          // player7.setVolume ("0");
+          // player8.setVolume ("0");
+          // player9.setVolume ("0.3");
+          // player10.setVolume ("0.3");
+          // player11.setVolume ("0.3");
+          // player12.setVolume ("0.3");
           // player13.setVolume ("0.02");
 
-          std::this_thread::sleep_for (std::chrono::milliseconds (1800));
+          // std::this_thread::sleep_for (std::chrono::milliseconds (1800));
         }
 
       auto end = std::chrono::system_clock::now ();
