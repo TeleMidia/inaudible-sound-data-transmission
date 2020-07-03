@@ -11,3 +11,11 @@ gst-launch-1.0 audiomixer name=mix ! audioconvert ! audioresample ! autoaudiosin
 gst-launch-1.0 audiomixer name=mix ! audioconvert ! audioresample ! autoaudiosink audiotestsrc freq=20150 timestamp-offset=10000000000 ! mix. audiotestsrc freq=20300 timestamp-offset=5000000000 ! mix.
 
 gst-launch-1.0 audiotestsrc freq=20000 ! audiomixer name=mix ! audioconvert ! audioresample ! autoaudiosink audiotestsrc freq=20150 wave=cosine timestamp-offset=25 ! mix. audiotestsrc freq=20300 timestamp-offset=25 ! mix. audiotestsrc freq=20450 timestamp-offset=25 ! mix. audiotestsrc freq=20600 timestamp-offset=25 ! mix.
+
+# To record a single tone to a file
+- Download Audio Recorder:
+	sudo add-apt-repository ppa:audio-recorder/ppa
+	sudo apt-get update && sudo apt-get install audio-recorder
+- Select on Audio Recorder WAV (lossless wav 44khz) and Source: Default system device
+- Use this pipeline:
+	gst-launch-1.0 audiotestsrc freq=19500 ! audioconvert ! audioresample ! autoaudiosink
