@@ -59,6 +59,8 @@ public class FrequencyCalculator {
     private double[] wnd2;                                                      // Bartlett window function to be used with spectrumAmpInTmp2
     private double[] cosMod;                                                    // A cosine value to be multiplied with the spectrumAmpInTmp2
     private double fftThreshold = 0.0;                                          // Value for phase threshold usage
+    private static int amostrasColetadasCount = 0;
+    private static double[] amostrasColetadas;
 
 
     private int fftLen;
@@ -84,6 +86,8 @@ public class FrequencyCalculator {
         double freqS[] = new double[size_current];
         int i = 0;
         cosMod = new double[fftlen];
+
+//        amostrasColetadas = new double[fftlen];
 
 //        while (i < size_current ){
 //            freqS[i] = 19500 + 150 * i;
@@ -139,9 +143,22 @@ public class FrequencyCalculator {
             }
             if (spectrumAmpPt == fftLen) {
                 for (int i = 0; i < fftLen; i++) {
-                    spectrumAmpInTmp[i] = spectrumAmpIn[i] * wnd[i] * cosMod[i];
+//                    spectrumAmpInTmp[i] = spectrumAmpIn[i] * wnd[i] ;
+                    spectrumAmpInTmp[i] = spectrumAmpIn[i];
                     Log.d("@@@", "index "+ i + " - Value: "+spectrumAmpInTmp[i]);
                 }
+//                if (amostrasColetadasCount < 4000){
+//                    for (int i = 0; i < spectrumAmpInTmp.length; i++) {
+//                        amostrasColetadas[i] += spectrumAmpInTmp[i];
+//                    }
+//                    amostrasColetadasCount++;
+//                }
+//                else {
+//                    Log.d("@@@","amostrasCount: "+amostrasColetadasCount);
+//                    for (int i = 0; i < amostrasColetadas.length; i++) {
+//                        Log.d("@@@", "index " + i + " - Value: " + amostrasColetadas[i]);
+//                    }
+//                }
 //                for (int i = 0; i < fftLen; i++) {
 ////                    spectrumAmpInTmp2[i] = spectrumAmpIn[i];
 //                    spectrumAmpInTmp2[i] = spectrumAmpIn[i] * wnd2[i];

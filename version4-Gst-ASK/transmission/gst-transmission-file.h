@@ -24,6 +24,7 @@ public:
   void stop ();
   void setFreq (const string &value);
   void setVolume (const string &value);
+  bool isRunning = false;
   struct
   {                               // audio pipeline
     GstElement *src;              // file Src format

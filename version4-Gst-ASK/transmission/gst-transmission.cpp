@@ -363,74 +363,77 @@ main ()
 
   player13.setFreq ("19500");
   player13.setVolume ("0.5");
-  player13.start ();
+  // player13.start ();
 
   player14.setFreq ("19700");
   player14.setVolume ("0.3");
-  player14.start ();
+  // player14.start ();
 
   player15.setFreq ("19850");
   player15.setVolume ("0.1");
-  player15.start ();
+  // player15.start ();
 
-  player1.setFreq ("20000");
-  player1.setVolume ("0.3");
+  player1.setFreq ("19500");
+  player1.setVolume ("1");
   player1.start ();
 
-  player2.setFreq ("20150");
-  player2.setVolume ("0.3");
+  player2.setFreq ("19700");
+  player2.setVolume ("1");
   player2.start ();
 
-  player3.setFreq ("20300");
-  player3.setVolume ("0.3");
+  player3.setFreq ("19900");
+  player3.setVolume ("1");
   player3.start ();
 
-  player4.setFreq ("20450");
-  player4.setVolume ("0.3");
+  player4.setFreq ("20100");
+  player4.setVolume ("1");
   player4.start ();
 
-  player5.setFreq ("20600");
-  player5.setVolume ("0.3");
+  player5.setFreq ("20300");
+  player5.setVolume ("1");
   player5.start ();
 
-  player6.setFreq ("20750");
-  player6.setVolume ("0.3");
+  player6.setFreq ("20500");
+  player6.setVolume ("1");
   player6.start ();
 
-  player7.setFreq ("20900");
-  player7.setVolume ("0.3");
+  player7.setFreq ("20700");
+  player7.setVolume ("1");
   player7.start ();
 
-  player8.setFreq ("21050");
-  player8.setVolume ("0.3");
+  player8.setFreq ("20900");
+  player8.setVolume ("1");
   player8.start ();
 
   player9.setFreq ("21200");
   player9.setVolume ("0.3");
-  player9.start ();
+  // player9.start ();
 
   player10.setFreq ("21350");
   player10.setVolume ("0.3");
-  player10.start ();
+  // player10.start ();
 
   player11.setFreq ("21500");
   player11.setVolume ("0.3");
-  player11.start ();
+  // player11.start ();
 
   player12.setFreq ("21650");
   player12.setVolume ("0.3");
-  player12.start ();
+  // player12.start ();
 
   while (true)
     {
-      std::this_thread::sleep_for (std::chrono::seconds (2));
+      // std::this_thread::sleep_for (std::chrono::seconds (2));
 
-      auto start = std::chrono::system_clock::now ();
+      // auto start = std::chrono::system_clock::now ();
 
       short dataToSend[]
           // = { 7, 7, 19, 7, 7, 7  }; // highest number should be 2^13-1 =
           // 4095
-          = { 1, 17, 33, 49, 65, 81 };
+          // = { 1, 17, 33, 49, 65, 81 };
+          // = { 32767 };
+          // = {73, 146};
+          = {129};
       // = { 1, 1, 1, 1, 1, 1};
       // = { 1, 7, 5, 4, 19, 1 }; // highest number should be 2^13-1 = 4095
       // = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4095 }; //
@@ -445,7 +448,7 @@ main ()
           else{
             player13.setVolume ("0.1");
           }
-          std::this_thread::sleep_for (std::chrono::milliseconds (150));
+          // std::this_thread::sleep_for (std::chrono::milliseconds (150));
 
         }
         // flagSync = true;
@@ -455,6 +458,8 @@ main ()
         {
           number[t] = 0;
         }
+      
+      auto start = std::chrono::system_clock::now ();
 
       for (int i = 0; i < sizeof (dataToSend) / sizeof (dataToSend[0]); i++)
         {
@@ -468,106 +473,114 @@ main ()
 
           printf ("\n");
 
-          std::string strTransmission = "";  // String with the data to generate a hamming code
-          for (int k = 0; k < size; k++)
-          {
-             if (!(number[k] == 0 && strTransmission.size() == 0))
-                strTransmission += std::to_string(number[k]);
-          }
+          // std::string strTransmission = "";  // String with the data to generate a hamming code
+          // for (int k = 0; k < size; k++)
+          // {
+          //    if (!(number[k] == 0 && strTransmission.size() == 0))
+          //       strTransmission += std::to_string(number[k]);
+          // }
           
           // printf("string: %s\n",strTransmission.substr(0, 11).c_str());
 
           // strTransmission = intArrayToString(number,size);
-          transmission = generateMatrix(strTransmission.substr(0, 11));
-          printf("Valor: %d\n", hammingBinToI(transmission));
+          // transmission = generateMatrix(strTransmission.substr(0, 11));
+          // printf("Valor: %d\n", hammingBinToI(transmission));
 
-          bin ((unsigned short) hammingBinToI(transmission), number, size);
+          // bin ((unsigned short) hammingBinToI(transmission), number, size);
 
-          printf ("Hamming Num:");          
-          for (int t = 0; t < 12; t++)
-            {
-              printf ("%d", number[t]);
-            }
+          // printf ("Hamming Num:");          
+          // for (int t = 0; t < 12; t++)
+          //   {
+          //     printf ("%d", number[t]);
+          //   }
 
-          printf ("\n\n");
+          // printf ("\n\n");
 
           if (number[0])
             player1.setVolume ("1");
           else
-            player1.setVolume ("0.3");
+            player1.setVolume ("0");
           if (number[1])
             player2.setVolume ("1");
           else
-            player2.setVolume ("0.3");
+            player2.setVolume ("0");
           if (number[2])
             player3.setVolume ("1");
           else
-            player3.setVolume ("0.3");
+            player3.setVolume ("0");
           if (number[3])
             player4.setVolume ("1");
           else
-            player4.setVolume ("0.3");
+            player4.setVolume ("0");
           if (number[4])
             player5.setVolume ("1");
           else
-            player5.setVolume ("0.3");
+            player5.setVolume ("0");
           if (number[5])
             player6.setVolume ("1");
           else
-            player6.setVolume ("0.3");
+            player6.setVolume ("0");
           if (number[6])
             player7.setVolume ("1");
           else
-            player7.setVolume ("0.3");
+            player7.setVolume ("0");
           if (number[7])
             player8.setVolume ("1");
           else
-            player8.setVolume ("0.3");
-          if (number[8])
-            player9.setVolume ("1");
-          else
-            player9.setVolume ("0.3");
-          if (number[9])
-            player10.setVolume ("1");
-          else
-            player10.setVolume ("0.3");
-          if (number[10])
-            player11.setVolume ("1");
-          else
-            player11.setVolume ("0.3");
-          if (number[11])
-            player12.setVolume ("1");
-          else
-            player12.setVolume ("0.3");
+            player8.setVolume ("0");
+          // if (number[8])
+          //   player9.setVolume ("1");
+          // else
+          //   player9.setVolume ("0");
+          // if (number[9])
+          //   player10.setVolume ("1");
+          // else
+          //   player10.setVolume ("0");
+          // if (number[10])
+          //   player11.setVolume ("1");
+          // else
+          //   player11.setVolume ("0");
+          // if (number[11])
+          //   player12.setVolume ("1");
+          // else
+          //   player12.setVolume ("0");
 
-          std::this_thread::sleep_for (std::chrono::milliseconds (150));
+          std::this_thread::sleep_for (std::chrono::milliseconds (46));
 
-          for (int t = 0; t < size; t++)
-            {
-              number[t] = 0;
-            }
+          // for (int t = 0; t < size; t++)
+          //   {
+          //     number[t] = 0;
+          //   }
 
-          player1.setVolume ("0.3");
-          player2.setVolume ("0.3");
-          player3.setVolume ("0.3");
-          player4.setVolume ("0.3");
-          player5.setVolume ("0.3");
-          player6.setVolume ("0.3");
-          player7.setVolume ("0.3");
-          player8.setVolume ("0.3");
-          player9.setVolume ("0.3");
-          player10.setVolume ("0.3");
-          player11.setVolume ("0.3");
-          player12.setVolume ("0.3");
+          // player1.setVolume ("0");
+          // player2.setVolume ("0");
+          // player3.setVolume ("0");
+          // player4.setVolume ("0");
+          // player5.setVolume ("0");
+          // player6.setVolume ("0");
+          // player7.setVolume ("0");
+          // player8.setVolume ("0");
+          // player9.setVolume ("0");
+          // player10.setVolume ("0");
+          // player11.setVolume ("0");
+          // player12.setVolume ("0");
 
-          std::this_thread::sleep_for (std::chrono::milliseconds (300));
         }
-
       auto end = std::chrono::system_clock::now ();
+          // player1.setVolume ("0");
+          // player2.setVolume ("0");
+          // player3.setVolume ("0");
+          // player4.setVolume ("0");
+          // player5.setVolume ("0");
+          // player6.setVolume ("0");
+          // player7.setVolume ("0");
+          // player8.setVolume ("0");
+          // std::this_thread::sleep_for (std::chrono::milliseconds (300));
+
       std::chrono::duration<double, std::milli> elapsed_seconds
           = end - start;
 
       std::cout << "elapsed time: " << elapsed_seconds.count () << "ms\n";
-      std::this_thread::sleep_for (std::chrono::seconds (2));
+      // std::this_thread::sleep_for (std::chrono::seconds (2));
     }
 }
