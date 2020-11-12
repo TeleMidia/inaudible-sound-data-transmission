@@ -279,29 +279,29 @@ main ()
   // player13.setVolume ("0.5");
   // player13.start ();
 
-  player1.setVolume ("0");
-  // player1.start ();
+  player1.setVolume ("0.1");
+  player1.start ();
 
-  player2.setVolume ("0");
-  // player2.start ();
+  player2.setVolume ("0.1");
+  player2.start ();
 
-  player3.setVolume ("0");
-  // player3.start ();
+  player3.setVolume ("0.1");
+  player3.start ();
 
-  player4.setVolume ("0");
-  // player4.start ();
+  player4.setVolume ("0.1");
+  player4.start ();
 
-  player5.setVolume ("0");
-  // player5.start ();
+  player5.setVolume ("0.1");
+  player5.start ();
 
-  player6.setVolume ("0");
-  // player6.start ();
+  player6.setVolume ("0.1");
+  player6.start ();
 
-  player7.setVolume ("0");
-  // player7.start ();
+  player7.setVolume ("0.1");
+  player7.start ();
 
-  player8.setVolume ("0");
-  // player8.start ();
+  player8.setVolume ("0.1");
+  player8.start ();
 
   // player9.setVolume ("0.3");
   // player9.start ();
@@ -314,6 +314,9 @@ main ()
 
   // player12.setVolume ("0.3");
   // player12.start ();
+
+  std::this_thread::sleep_for (std::chrono::milliseconds (300));
+
   int pass  = 0;
   while (pass < 2)
     {
@@ -326,9 +329,9 @@ main ()
           // 8191
           // = { 1, 7, 5, 4, 19, 1 }; // highest number should be 2^13-1 =
           // 8191
-          // = { 1, 17, 33, 49, 65, 81 };
+          = { 1, 17, 33, 49, 65, 81 };
           // = { 73, 146 };
-          = { 255 };
+          // = { 255 };
       // = { 1, 1, 1, 1, 1, 1};
 
       // = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4095 }; //
@@ -356,67 +359,67 @@ main ()
           if (pass == 0){
             if (number[0]){
               player1.setVolume ("1");
-              player1.start();
+              // player1.start();
             }
             else{
-                player1.setVolume ("0");
-                player1.start();
+                player1.setVolume ("0.1");
+                // player1.start();
               }
             if (number[1]){
                 player2.setVolume ("1");
-                player2.start();
+                // player2.start();
               }
             else{
-                player2.setVolume ("0");
-                player2.start();
+                player2.setVolume ("0.1");
+                // player2.start();
               }
             if (number[2]){
                 player3.setVolume ("1");
-                player3.start();
+                // player3.start();
               }
             else{
-                player3.setVolume ("0");
-                player3.start();
+                player3.setVolume ("0.1");
+                // player3.start();
               }
             if (number[3]){
                 player4.setVolume ("1");
-                player4.start();
+                // player4.start();
               }
             else{
-                player4.setVolume ("0");
-                player4.start();
+                player4.setVolume ("0.1");
+                // player4.start();
               }
             if (number[4]){
                 player5.setVolume ("1");
-                player5.start();
+                // player5.start();
               }
             else{
-                player5.setVolume ("0");
-                player5.start();
+                player5.setVolume ("0.1");
+                // player5.start();
               }
             if (number[5]){
                 player6.setVolume ("1");
-                player6.start();
+                // player6.start();
               }
             else{
-                player6.setVolume ("0");
-                player6.start();
+                player6.setVolume ("0.1");
+                // player6.start();
               }
             if (number[6]){
                 player7.setVolume ("1");
-                player7.start();
+                // player7.start();
               }
             else{
-                player7.setVolume ("0");
-                player7.start();
+                player7.setVolume ("0.1");
+                // player7.start();
               }
             if (number[7]){
                 player8.setVolume ("1");
-                player8.start();
+                // player8.start();
               }
             else{
-                player8.setVolume ("0");
-                player8.start();
+                player8.setVolume ("0.1");
+                // player8.start();
               }
           }
           
@@ -523,4 +526,6 @@ main ()
 
       pass++;
     }
+
+    std::this_thread::sleep_for (std::chrono::milliseconds (300));
 }
