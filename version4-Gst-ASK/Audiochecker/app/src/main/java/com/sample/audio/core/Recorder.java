@@ -12,7 +12,7 @@ public class Recorder {
     private int channelConfig = AudioFormat.CHANNEL_IN_MONO;
     private int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
     private int sampleRate = 44100;
-    private int blocksize = 8192;
+    private int blocksize = 512;
     private Thread thread;
     private Callback callback;
 

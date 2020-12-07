@@ -25,15 +25,15 @@ public class FrequencyCalculator {
 
     static private double num = 0;                    // Counter for the number of times when a freq was found
     static private int size_current = 15;              // Size of the number of bits received
-    static private int fq_count[] = new int[size_current];       // Array of number of times where the freq was found
+    static private int fq_count[] = new int[11];       // Array of number of times where the freq was found
     static private boolean empty = true;              // If the receptivity array is empty
     static private boolean flag_new_byte = false;     // If the fq_count array is empty
     static private boolean flag_runs_printed = false; // If the results for all of the bytes received has been printed
     static private String fq_string = new String();   // String to write all fq_count values
     // Variables for tests
 
-//    static private short dataToRecieve[] =  { 1, 7, 5, 4, 19, 1 };
-    static private short dataToRecieve[] =  { 1, 17, 33, 49, 65, 81 };
+    static private short dataToRecieve[] =  { 1, 7, 5, 4, 19, 1 };
+//    static private short dataToRecieve[] =  { 1, 17, 33, 49, 65, 81 };
     static private int size = 11;                                               // Size of the possible number to be received
     static private int dataExpected[] = new int[size];                          // A value of dataToReceive but in bits
     static private Double dataExpectedHamming[][] = null;                       // A value of dataToReceive but in bits - version for hamming codes
@@ -51,7 +51,7 @@ public class FrequencyCalculator {
     static private int silence_quant = 0;                                       // Quantity of continuous silences detected
     static private boolean silence_time = false;                                // If it is during silence or not
     Double[][] matrix = null;
-    static private int syncValue = 0;                                           // If < 3 the app is not synced with the transmission
+//    static private int syncValue = 0;                                           // If < 3 the app is not synced with the transmission
     static private boolean syncStance = false;                                  // If ref freq has a low (false) or high (true) amplitude
     private ComplexDoubleFFT spectrumComplexFFT;                                // Object for Complex FFT transform
     private double[] spectrumAmpInTmp2;                                         // Bin for double values to be stored and converted by ComplexDoubleFFT from mic input
@@ -145,7 +145,7 @@ public class FrequencyCalculator {
                 for (int i = 0; i < fftLen; i++) {
 //                    spectrumAmpInTmp[i] = spectrumAmpIn[i] * wnd[i] ;
                     spectrumAmpInTmp[i] = spectrumAmpIn[i];
-                    Log.d("@@@", "index "+ i + " - Value: "+spectrumAmpInTmp[i]);
+//                    Log.d("@@@", "index "+ i + " - Value: "+spectrumAmpInTmp[i]);
                 }
 //                if (amostrasColetadasCount < 4000){
 //                    for (int i = 0; i < spectrumAmpInTmp.length; i++) {
@@ -207,6 +207,14 @@ public class FrequencyCalculator {
     static public void setViews (TextView text, ImageView image){
         textMinute = text;
         imageApp = image;
+    }
+
+    private int binaryToInteger(double[] numbers) {
+        int result = 0;
+        for(int i=0; i < size; i++)
+            if(numbers[i]==1)
+                result += Math.pow(2, i);
+        return result;
     }
 
     public double getFreq() {
@@ -272,16 +280,16 @@ public class FrequencyCalculator {
 //            System.out.flush();
 //        }
 //
-        if (syncStance && (spectrumAmpOutDB[113] < -40) && (syncValue == 1)){
-            syncStance = false;
-            syncValue++;
-        }
-        else if (!syncStance && (spectrumAmpOutDB[113] > -40)){
-            syncStance = true;
-            syncValue++;
-        }
+//        if (syncStance && (spectrumAmpOutDB[113] < -40) && (syncValue == 1)){
+//            syncStance = false;
+//            syncValue++;
+//        }
+//        else if (!syncStance && (spectrumAmpOutDB[113] > -40)){
+//            syncStance = true;
+//            syncValue++;
+//        }
 
-        System.out.println("Sync Value: "+Integer.toString(syncValue));
+//        System.out.println("Sync Value: "+Integer.toString(syncValue));
 
         if (spectrumAmpOutDB[113] > -60) {
             if (spectrumAmpOutDB[116] > (spectrumAmpOutDB[113] - 3) && spectrumAmpOutDB[116] > -50)
@@ -401,9 +409,9 @@ public class FrequencyCalculator {
             flag_runs_printed = true;
         }
 
-        if (syncValue < 3){
-            return maxAmpFreq;
-        }
+//        if (syncValue < 3){
+//            return maxAmpFreq;
+//        }
 
 //        if (invalid_freq){
 //            System.out.printf("An invalid frequency was found in %s !\n",invalid_freq_string);
@@ -464,10 +472,10 @@ public class FrequencyCalculator {
             }
             q=0;
             bin(dataToRecieve[receptionCount],dataExpected,size);
-            for (int tmpIntValue: dataExpected ) {
-                tmpdataExpectedHamming += Integer.toString(tmpIntValue);
-            }
-            dataExpectedHamming = Hamming_Code_Gen.generateMatrix(tmpdataExpectedHamming);
+//            for (int tmpIntValue: dataExpected ) {
+//                tmpdataExpectedHamming += Integer.toString(tmpIntValue);
+//            }
+//            dataExpectedHamming = Hamming_Code_Gen.generateMatrix(tmpdataExpectedHamming);
 //            System.out.println("Matrix Here: "+ Hamming_Code_Gen.doubleToIntMatrix(dataExpectedHamming));
 //            Hamming_Code_Gen.printMatrix(dataExpectedHamming);
 
@@ -475,19 +483,20 @@ public class FrequencyCalculator {
 
 //                System.out.printf("How are the numbers? %.2f < %.2f - place %d\n",(double) j/num, (double) 2/3,q+1);
 
-                assert dataExpectedHamming[q][0] == 1 || dataExpectedHamming[q][0] == 0;
+//                assert dataExpectedHamming[q][0] == 1 || dataExpectedHamming[q][0] == 0;
+                assert dataExpected[q] == 1 || dataExpected[q] == 0;
 
-                if (dataExpectedHamming[q][0] == 1 && dataExpectedHamming[q][0] >  j && ((double) j/num < (double) 2/3) ){
+                if (dataExpected[q] == 1 && dataExpected[q] >  j && ((double) j/num < (double) 2/3) ){
 //                    System.out.printf("Look: expected %f < received %d - percentage: %.2f - local %d - reception %d\n",dataExpectedHamming[q][0], j, (double) j/num, q+1, receptionCount+1);
                     receptivity[receptionCount] = 0;
                 }
-                else if (dataExpectedHamming[q][0] == 0 && dataExpectedHamming[q][0] < j && ((double) j/num >= (double) 2/3)){
+                else if (dataExpected[q] == 0 && dataExpected[q] < j && ((double) j/num >= (double) 2/3)){
 //                    System.out.printf("Look: expected %f >= received %d - percentage: %.2f - local %d - reception %d\n",dataExpectedHamming[q][0], j, (double) j/num, q+1, receptionCount+1);
                     receptivity[receptionCount] = 0;
                 }
                 else { // Data is correct
                     receptivity_bit[q]++;
-                    if (dataExpectedHamming[q][0] == 1)
+                    if (dataExpected[q] == 1)
                         receptivity_current[q] = 1;
                     else
                         receptivity_current[q] = 0;
@@ -498,89 +507,96 @@ public class FrequencyCalculator {
                 q++;
             }
 
-            q = 0;
-            for (Double tmpDoubleValue: receptivity_current) {
-                checkMatrix[q][0] = tmpDoubleValue;
-                q++;
-            }
-
-            checkMatrix = Hamming_Code_Gen.checkmatrix(checkMatrix);
-//            System.out.println("Check matrix:");
-//            Hamming_Code_Gen.printMatrix(checkMatrix);
-
-            q = 0;
-            for (Double tmpSumAr[]: checkMatrix) {
-                for (Double tmpSumVal: tmpSumAr) {
-                    sumCheckMatrix += (int) (Math.pow(2,q)*tmpSumVal);
-                    q++;
-                }
-            }
-//            System.out.printf("Check Value: %d - number of indexes: %d\n",sumCheckMatrix,q);
-
-            if (sumCheckMatrix > 0){
-                if (receptivity_current[sumCheckMatrix-1] == 1)
-                    receptivity_current[sumCheckMatrix-1] = 0;
-                else
-                    receptivity_current[sumCheckMatrix-1] = 1;
-            }
+//            q = 0;
+//            for (Double tmpDoubleValue: receptivity_current) {
+//                checkMatrix[q][0] = tmpDoubleValue;
+//                q++;
+//            }
+//
+//            checkMatrix = Hamming_Code_Gen.checkmatrix(checkMatrix);
+////            System.out.println("Check matrix:");
+////            Hamming_Code_Gen.printMatrix(checkMatrix);
+//
+//            q = 0;
+//            for (Double tmpSumAr[]: checkMatrix) {
+//                for (Double tmpSumVal: tmpSumAr) {
+//                    sumCheckMatrix += (int) (Math.pow(2,q)*tmpSumVal);
+//                    q++;
+//                }
+//            }
+////            System.out.printf("Check Value: %d - number of indexes: %d\n",sumCheckMatrix,q);
+//
+//            if (sumCheckMatrix > 0){
+//                if (receptivity_current[sumCheckMatrix-1] == 1)
+//                    receptivity_current[sumCheckMatrix-1] = 0;
+//                else
+//                    receptivity_current[sumCheckMatrix-1] = 1;
+//            }
 
 //            System.out.println(Arrays.toString(receptivity_current));
 
-            prog_min = 0;
-            prog_number = 0;
-            for (int j = 0; j < size_current; j++){
-                if (receptivity_current[j] == 1) {
-                    if (j == 2) {
-                        prog_number += Math.pow(2, j-2);
-                    }
-                    else if (j >= 4 && j <= 6 ){
-                        prog_number += Math.pow(2, j-3);
-                    }
-                    else if (j >= 8 && j <= 11) {
-                        prog_min += Math.pow(2, j-8);
-                    }
-                }
-            }
+//            prog_min = 0;
+//            prog_number = 0;
+//            for (int j = 0; j < size_current; j++){
+//                if (receptivity_current[j] == 1) {
+//                    if (j == 2) {
+//                        prog_number += Math.pow(2, j-2);
+//                    }
+//                    else if (j >= 4 && j <= 6 ){
+//                        prog_number += Math.pow(2, j-3);
+//                    }
+//                    else if (j >= 8 && j <= 11) {
+//                        prog_min += Math.pow(2, j-8);
+//                    }
+//                }
+//            }
 
 //            System.out.printf("Program Number: %d - Minute:%d\n",prog_number,prog_min);
 
-            if (prog_number != 0b1){
-                textMinute.post(new Runnable() {
-                    public void run() {
-                        textMinute.setVisibility(View.INVISIBLE);
-                    }
-                });
-            }
-            else if (prog_number == 0b1){
-
-                textMinute.post(new Runnable() {
-                    public void run() {
-                        textMinute.setText("Min: "+Integer.toString(prog_min));
-                        textMinute.setVisibility(View.VISIBLE);
-                    }
-                });
-
-
-                if (prog_min == 0b11){
-                    imageApp.post(new Runnable() {
-                        public void run() {
-                            imageApp.setVisibility(View.VISIBLE);
-                        }
-                    });
+//            if (prog_number != 0b1){
+//                textMinute.post(new Runnable() {
+//                    public void run() {
+//                        textMinute.setVisibility(View.INVISIBLE);
+//                    }
+//                });
+//            }
+//            else if (prog_number == 0b1){
+//
+//                textMinute.post(new Runnable() {
+//                    public void run() {
+//                        textMinute.setText("Min: "+Integer.toString(prog_min));
+//                        textMinute.setVisibility(View.VISIBLE);
+//                    }
+//                });
+//
+//
+//                if (prog_min == 0b11){
+//                    imageApp.post(new Runnable() {
+//                        public void run() {
+//                            imageApp.setVisibility(View.VISIBLE);
+//                        }
+//                    });
+//                }
+//                else {
+//                    imageApp.post(new Runnable() {
+//                        public void run() {
+//                            imageApp.setVisibility(View.INVISIBLE);
+//                        }
+//                    });
+//                }
+//            }
+            final int currentIntMessage = binaryToInteger(receptivity_current);
+            textMinute.post(new Runnable() {
+                public void run() {
+                    textMinute.setText(Integer.toString(currentIntMessage));
+                    textMinute.setVisibility(View.VISIBLE);
                 }
-                else {
-                    imageApp.post(new Runnable() {
-                        public void run() {
-                            imageApp.setVisibility(View.INVISIBLE);
-                        }
-                    });
-                }
-            }
+            });
 
             Arrays.fill(fq_count,0);
             flag_new_byte = false;
 //            lastEmpty = currentTimeMillis();
-//            System.out.printf("Number of times found freqs: %s - num: %.0f\n",fq_string,num);
+            System.out.printf("Number of times found freqs: %s - num: %.0f\n",currentIntMessage,num);
             System.out.flush();
             fq_string = "";
             num = 0;
@@ -597,7 +613,7 @@ public class FrequencyCalculator {
 //                System.out.printf("All runs : [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f]\n", corrects[0]/allruns,corrects[1]/allruns,corrects[2]/allruns,corrects[3]/allruns,corrects[4]/allruns,corrects[5]/allruns);
                 System.out.flush();
                 allruns++;
-                syncValue = 0;
+//                syncValue = 0;
                 syncStance = false;
             }
         }
@@ -610,7 +626,7 @@ public class FrequencyCalculator {
             fq_string = "";
             receptionCount = 0;
             allruns++;
-            syncValue = 0;
+//            syncValue = 0;
             syncStance = false;
             System.out.println("Silence greater than 2s\n");
             System.out.flush();

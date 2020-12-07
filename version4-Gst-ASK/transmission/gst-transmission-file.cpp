@@ -244,28 +244,28 @@ bin (unsigned short v, int number[], int size)
 int
 main ()
 {
-  // GstFileSigGen player1 = GstFileSigGen ((char *) "Audio Track_-01.wav"),
-  //               player2 = GstFileSigGen ((char *) "Audio Track_-02.wav"),
-  //               player3 = GstFileSigGen ((char *) "Audio Track_-03.wav"),
-  //               player4 = GstFileSigGen ((char *) "Audio Track_-04.wav"),
-  //               player5 = GstFileSigGen ((char *) "Audio Track_-05.wav"),
-  //               player6 = GstFileSigGen ((char *) "Audio Track_-06.wav"),
-  //               player7 = GstFileSigGen ((char *) "Audio Track_-07.wav"),
-  //               player8 = GstFileSigGen ((char *) "Audio Track_-08.wav"),
+  GstFileSigGen player1 = GstFileSigGen ((char *) "Audio Track_-01.wav"),
+                player2 = GstFileSigGen ((char *) "Audio Track_-02.wav"),
+                player3 = GstFileSigGen ((char *) "Audio Track_-03.wav"),
+                player4 = GstFileSigGen ((char *) "Audio Track_-04.wav"),
+                player5 = GstFileSigGen ((char *) "Audio Track_-05.wav"),
+                player6 = GstFileSigGen ((char *) "Audio Track_-06.wav"),
+                player7 = GstFileSigGen ((char *) "Audio Track_-07.wav"),
+                player8 = GstFileSigGen ((char *) "Audio Track_-08.wav"),
   //               player9 = GstFileSigGen ((char *) "Audio Track_-09.wav"),
   //               player10 = GstFileSigGen ((char *) "Audio Track_-10.wav"),
   //               player11 = GstFileSigGen ((char *) "Audio Track_-11.wav"),
   //               player12 = GstFileSigGen ((char *) "Audio Track_-12.wav"),
-  //               player13 = GstFileSigGen ((char *) "Audio Track_-13.wav");
+                player13 = GstFileSigGen ((char *) "Audio Track_-13.wav");
 
-  GstFileSigGen player1 = GstFileSigGen ((char *) "19500Hz.wav"),
-                player2 = GstFileSigGen ((char *) "19700Hz.wav"),
-                player3 = GstFileSigGen ((char *) "19900Hz.wav"),
-                player4 = GstFileSigGen ((char *) "20100Hz.wav"),
-                player5 = GstFileSigGen ((char *) "20300Hz.wav"),
-                player6 = GstFileSigGen ((char *) "20500Hz.wav"),
-                player7 = GstFileSigGen ((char *) "20700Hz.wav"),
-                player8 = GstFileSigGen ((char *) "20900Hz.wav");
+  // GstFileSigGen player1 = GstFileSigGen ((char *) "19500Hz.wav"),
+  //               player2 = GstFileSigGen ((char *) "19700Hz.wav"),
+  //               player3 = GstFileSigGen ((char *) "19900Hz.wav"),
+  //               player4 = GstFileSigGen ((char *) "20100Hz.wav"),
+  //               player5 = GstFileSigGen ((char *) "20300Hz.wav"),
+  //               player6 = GstFileSigGen ((char *) "20500Hz.wav"),
+  //               player7 = GstFileSigGen ((char *) "20700Hz.wav"),
+  //               player8 = GstFileSigGen ((char *) "20900Hz.wav");
                 // player9 = GstFileSigGen ((char *) "Hz.wav"),
                 // player10 = GstFileSigGen ((char *) "Hz.wav"),
                 // player11 = GstFileSigGen ((char *) "Hz.wav"),
@@ -276,8 +276,8 @@ main ()
 
   int number[size];
 
-  // player13.setVolume ("0.5");
-  // player13.start ();
+  player13.setVolume ("0.5");
+  player13.start ();
 
   player1.setVolume ("0.1");
   player1.start ();
@@ -318,7 +318,7 @@ main ()
   std::this_thread::sleep_for (std::chrono::milliseconds (300));
 
   int pass  = 0;
-  while (pass < 2)
+  while (pass < 1)
     {
       // std::this_thread::sleep_for (std::chrono::seconds (2));
 
@@ -327,9 +327,9 @@ main ()
       short dataToSend[]
           // = { 7, 7, 7, 7, 7, 7 }; // highest number should be 2^13-1 =
           // 8191
-          // = { 1, 7, 5, 4, 19, 1 }; // highest number should be 2^13-1 =
+          = { 1, 7, 5, 4, 19, 1 }; // highest number should be 2^13-1 =
           // 8191
-          = { 1, 17, 33, 49, 65, 81 };
+          // = { 1, 17, 33, 49, 65, 81 };
           // = { 73, 146 };
           // = { 255 };
       // = { 1, 1, 1, 1, 1, 1};
@@ -347,12 +347,12 @@ main ()
           // printf ("number: %d\n", dataToSend[i]);
           bin (dataToSend[i], number, size);
 
-          // for (int t = 0; t < size; t++)
-          //   {
-          //     printf ("%d", number[t]);
-          //   }
+          for (int t = 0; t < size; t++)
+            {
+              printf ("%d", number[t]);
+            }
 
-          // printf ("\n");
+          printf ("\n");
 
           // player13.setVolume ("0.7");
 
